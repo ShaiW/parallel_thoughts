@@ -10,6 +10,8 @@ description: What are selfish mining, subshares, and PRS?
 
 In this post, we present two solutions for selfish mining, the Fruitchain bla bla bla
 
+Throughout the post, more challenging aspects are posed as answers with solutions. These questions are meant to get your brain gears rotating, but also to clearly mark the more technical comments that might require a bit of formal background. **Skipping these questions entirely will not detract the reading experience, and is recommended on a first read**.
+
 <div align="right"><figure><img src="../.gitbook/assets/image (3).png" alt="" width="375"><figcaption><p>A shellfish miner</p></figcaption></figure></div>
 
 ## Selfish Mining Primer
@@ -31,7 +33,7 @@ The incentive in Bitcoin is straightforward: if your block is on the heaviest ch
 
 [In their paper](https://arxiv.org/abs/1311.0243), Eyal and Sirer present a strategy that increases the profit of a large miner by withholding blocks.
 
-The idea is that by withholding the blocks they created, only releasing them at strategic times, a large miner can increase the orphan rates of the rest of the network more than its own orphan rates, causing their proportion of non-orphaned work to increase, whereby earning then a bigger cut of the reward than their coontribution to mining.
+The idea is that by withholding the blocks they created, only releasing them at strategic times, a large miner can increase the orphan rates of the rest of the network more than its own orphan rates, causing their proportion of non-orphaned work to increase, whereby earning then a bigger cut of the reward than their contribution to mining.
 
 For those who want the details of the Eyal-Sirer attack, as well as an overview of the subsequent attacks and countermeasures, I recommend the [relevant section](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-2-the-block-chain-paradigm/selfish-mining-in-bitcoin) of my book.
 
@@ -73,7 +75,7 @@ The key hidden detail here is how long we need to wait before the fraction becom
 
 ### Selfish Generals?
 
-In my experience, what I am about to explain in the following section shatters the way many people view Bitcoin's security properties.
+In my experience, what I am about to explain in the following section tends to contradict how many people view Bitcoin's security properties.
 
 The following statements are facts:
 
@@ -89,7 +91,7 @@ Apparently, while it is true that Bitcoin can handle a higher fault threshold, t
 
 So why are we even doing this?
 
-Because the assumption of a perfectly connected adversary is unrealistic. Remember, a perfectly connected adversary has the following property: if the adversary withholds a block $$B$$, and then upon hearing about a competing block $$C$$ releases block $$B$$, they are _guaranteed_ that the network will prefer $$B$$ over $$C$$.
+Because the assumption of a perfectly connected adversary is unrealistic. A perfectly connected adversary has the following property: if they withhold a block $$B$$, only releasing it upon hearing about a a competing block $$C$$ releases block $$B$$, they are _guaranteed_ that the network will prefer $$B$$ over $$C$$.
 
 It's hard to imagine such an adversary in reality. Even for a very well-connected adversary, there must be some other miner sufficiently distant that, by the time the attacker learns of their blocks, most honest miners also have, giving the attacker's block a _zero_ chance to win.
 
@@ -103,62 +105,133 @@ The aftermath of the discovery of selfish mining has led to various approaches f
 
 On the theoretical front — where the motivation is not the preservation of Bitcoin, but understanding what probabilistic consensus can or cannot do — people work on developing protocols where this problem does not exist.
 
-In the remainder of this post, I will present two such protocols.
+### Statistical Convergence
 
-The first protocol is called [_FruitChains_](https://eprint.iacr.org/2016/916)_._ Introduced in a 2016 paper by Paas and Shi, selfish mining rightfully claims to be the first protocol to solve selfish mining, and for a good reason. However, since its inception almost a decade ago, no projects have attempted or declared any intentions to implement it, and for a good reason: the trade-offs it proposes are unreasonable. Theoretically, it is great, but when you try to translate the asymptotics provided by theory to an actual implementation, you find that implementing the protocol requires unreasonably delaying how long miners have to wait before they are rewarded.
+We laid out our goal: to make reward shares more fair.
 
-Following FruitChains, the selfish mining resilience frontier remained fairly stagnant. That is, until \[ask Quai guys to fill in the blank]. They came up with a variation of FruitChain called [Proportional Reward Splitting](https://arxiv.org/abs/2503.10185) (PRS). PRS  can reduce the reward chilling periods by orders of magnitude, furnishing the first _practical_ approach to solving selfish mining.
+However, we must recall that altering the reward distribution method can also affect properties we often take for granted. One crucial aspect is how long it takes the reward share to converge into a fair distribution. Say that you have $$\alpha$$ of the hashrate, and a particular protocol guarantees that on average, over time, you will gain $$\alpha$$ of the rewards. How long will it take? Is it possible that the variance is so substantial that it will take days, even weeks, before the probability of deviating significantly from the amount of reward you were expecting becomes negligibly small?
 
-However, PRS is not yet a complete solution: it can only provide _partial incentive alignment_. Let's take a moment to understand what this means.
+This is not just about patience. Tracking reward distribution is crucial for the everyday operations of pools and exchanges. In a while, we will introduce _shares_, a way for a miner to prove to a pool that they have done part of the work. A pool typically pays out for the share in advance, based on an _estimation_ of the actual reward. An incorrect estimation can lead to a pool bleeding money. A protocol that forces pools to either take monetary risks or withhold payouts for days or weeks is impractical.
 
-### Classifying Misalignment
+### The State of the Art
 
-Recall that our discussion is from the prism of _mechanism design_, which means we want to _align_ the _rational_ behaviour induced by the incentives with the _honest_ behavior we want miners to follow.
+A holy grail solution to selfish mining is a protocol where, assuming a majority of the miners are _rational_, no miner with a fraction $$\alpha$$ of the network can obtain, in the long term, more than a fraction of $$\alpha$$ of the rewards. Such a protocol necessarily works by delaying the distribution of rewards to collect enough data to make the distribution fair.&#x20;
 
-We can classify protocols into two categories: aligned and misaligned. But this dichotomy is far too coarse. It turns out, there are quite a few different ways to be aligned or misaligned. Let us count the ways to be aligned:
+We are not quite there yet.
 
-* A protocol is _perfectly aligned_ if the _only_ rational strategy is the honest one. Many consider this too good to be true.
-* A protocol is _sufficiently aligned_ if the rational strategies are "close enough" to the honest behaviour. Formally speaking, those who declare selfish mining "not a concern" due to its insignificance for all but huge miners are actually arguing that Bitcoin is sufficiently aligned.
-* A protocol is _approximately aligned_ if (by a choice of parameters) we can make it as close to perfectly aligned as we want. In theory, this is considered the gold standard. The only protocol that is currently proven to be approximately aligned is FruitChains. However, there's always a gap between theory and practice, and FruitChain falls into this gap. While it can approximate perfect alignment with arbitrary quality, obtaining even reasonable approximations requires using unrealistic parameters. In simpler words: significantly reducing selfish mining is possible, but it requires delaying the distribution of block rewards by _weeks_.
+The first successful attempt at better aligning mining incentives is the [_FruitChains_](https://eprint.iacr.org/2016/916) protocol, introduced in 2016 by Pass and Shi. FruitChains manages to find a little weak, but still rather satisfying, compromise between rationality and honesty. The chain quality property holds, in the sense that an _honest_ miner will earn as much as they should _as long as other miners are honest_.
 
-And what about the way not to be aligned? Is there a difference between "not being aligned" and "being misaligned"? There is! And it is an important distinction:
+Wait what? Isn't this exactly what we _don't_ want to assume?
 
-* A protocol is _misaligned_ if rational strategies are "too far" from honest behavior. Being misaligned is the complement of being sufficiently aligned. Calling it "not sufficiently aligned" might have been more accurate, but it would also be a mouthful. There is no formal, unambiguous way to determine what "close enough" is, and agreeing on where the line should cross can become quite contentious. In fact, I might argue that the majority of arguments about blockchain security are, deep inside, arguments about whether a particular protocol is sufficiently aligned or not.
-* A protocol is _partially aligned_ if the honest strategy is (approximately) rational, but _there are other rational strategies_. The incentive structure prohibits many dishonest strategies, _but not all of them_. This is not necessarily a bad thing; it could very well mean that you are in the right direction, though not quite there yet.&#x20;
+Well, here is the thing: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either.
 
-I would currently classify PRS in the latter category. It provides a way to arbitrarily reduce selfish mining efficiently. However, the apparatus it sets up provides miners with a new dimension of choice that we'd rather they not explore. The incentives don't _encourage_ this kind of behavior, but they don't _penalize_ it either. Better yet, the set of rational strategies is tame and well-contained, showing that PRS is, in the very least, a major step towards a sufficiently aligned, practical protocol. Further yet, once we describe exactly what these strategies are, you will notice it is actually not too hard to come up with compelling, plausible fixes.
+This guarantee is not quite as strong as the holy grail we want, but it is still a strong improvement over bitcoin.
 
-This is where the publicly available research on PRS gets us, but in closed conversations (that I was permitted and even emphatically encouraged to share publicly), I've learned quite a lot about (and hopefully contributed a little to) the solution they are working on.
+The aspect where FruitChains falls short is with statistical convergence. Paas and Shi's analysis shows that to gain reasonable confidence that your share matches your hash rate, you have to wait around **three weeks**.
 
-The direction is natural, but introduces crucial subtlteties that must be treated with the proper finesse.
+This remained the state-of-the-art for a while. Literature on selfish-mining-resistant protocols continued to be published, primarily focusing on no-go theorems that demonstrate the vulnerability of various natural approaches to modifying FruitChains. We will mention some of these results as we learn how FruitChains works.
+
+As far as I know, the only new approach to emerge following FruitChains is the very recent [Proportional Reward Splitting](https://arxiv.org/abs/2503.10185) (PRS) — a protocol that is heavily inspired by FruitChains, but takes just enough liberties to stand on its own feet.
+
+PRS introduces two major improvements.
+
+First, it manages to remove the honesty assumption, replacing it with rationality. Note that this is still not the holy grail. Even in PRS, a rational majority alone is not sufficient to ensure chain quality. Even if all miners are rational, this is not guaranteed. What _is_ guaranteed is that if all miners are rational, and none deviates, then a single miner with less than half of the hash rate _gains nothing_ by deviating. The only way to earn from deviating is if there is a majority of deviators. But again, the deviation is not penalized either.
+
+Second, PRS enjoys **much better** statistical convergence. To achieve an error of at most 10%, FruitChains will take around **71 days**, while PRS only needs about **4 hours**. For a 3% error, you will have to wait around **two days** in PRS, while FruitChains requires almost **eight months**.
+
+If two days for 3% accuracy still sounds a bit rough, recall that these approximations were computed **for  Bitcoin**. Applying the same protocol to a chain with lower block times will reduce the convergence times by the same factor. For example, Quai Zone chains have a block delay of about 5 seconds, so (assuming you only care about the balance within the zone), the convergence is about 120 times faster, reducing the needed wait time for 3% to about 25 minutes.
+
+These advances place PRS as the best way yet to make a chain resistant to selfish mining, but the Quai team is not satisfied. They are now looking into&#x20;
 
 ### Marco? Polo!
 
-Mining pools actually have to face a very similar problem. In a mining pool, multiple miners collaborate to produce a single block. Despite their cooperation, only _one of them_ produces the winning nonce, so how can you divide the reward?
+Before describing FruitChains and PRS, it's worth considering a similar problem: designing a mining pool.
 
-Think about it like a search excavation looking for a lost treasure. (Make sure you follow the analogy, because we'll be building on it.)
+When you think about it, mining pools have to solve a similar problem: how to divide the block reward to the pool users, such that each user is rewarded proportionally to their contribution.
 
-To keep things fair, the members of the excavation decide that if they find the treausure, they will split it such that each member is rewarded in proportion to the amount of ground she covered during the search. How can they keep track of that, so they could know how to split the reward?
+The setting of mining pools is very different from selfish mining. Since the pool's decision does not affect consensus, the decision doesn't have to be inferable from the chain. Mining pools and users transmit _off-chain_ data in the decision-making process, and only post the final decision to the chain. This is a trade-off: on the one hand, we need this additional information to make a fair decision. On the other hand, this makes the decision process vulnerable to censorship, data manipulation, and other problems that blockchains solve. Reconciling the latter drawback requires sophisticated protocols such as  PPS+, PPLNS, FPPS, and others.
 
-Based only on knowing who found the treasure, _they_ _can't_. The finder might have done most of the work, or their fair share of work, or maybe they were extremely lucky and found the treasure in the first place they looked. If the only information you have is who found the treasure, all three scenarios are _indistinguishable_.
+FruitChain and PRS essentially try to take the core idea and try to reverse it: let's post enough of this additional information on-chain, but find a way to do so that is hard to manipulate. The first step to understanding these protocols is to understand what "additional information" mining pools collect and how it is helpful. (While conveniently ignoring the problem of aggregating the information trustlessly).
 
-So, you need additional information, but what kind of information? Imagine this: before the search starts, the excavation manager flies over the search area in his helicopter, from which he throws a million plastic tokens that scatter randomly across the landscape.
+So, how do mining pools work?
 
-Now, each member of the search excavation can collect these tokens as they encounter them, giving a rough approximation of how much land they covered. If the treasure is eventually found, each member will get a share equals to the share of token they found out of all _found_ tokens. For example, if Alice, Bobette, and Charline found 3, 5, and 7 tokens, then Bobette will get a fraction of  $$5/(3+5+7)$$, or _one-third,_ of the treasure. Note that we only divide by the number of _found_ tokens.
+I like to think of miners in a pool as a search excavation looking for a treasure lost in a vast cornfield. And when I say vast, I mean **vast**, with billions upon trillions of corn stalks.
 
-Recall that [in proof of work](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works) you keep hahshing different nonces until you find one whose hash is smaller than some number $$T$$ (called the _difficulty target)_, where hashing each nonce outputs a _uniformly random_ number between $$0$$ and $$N-1$$ for some huge $$N$$ (typically, $$N=2^{256}$$).
+To keep things fair, they decide that the treasure will be divided such that each member is rewarded in proportion to how much ground they covered.
 
-In our search excavation analogy, the members are miners, the ground they cover is the nonces they tried, and a treasure is a nonce that hashes to a number smaller than the difficulty target, but what are the plastic tokens?
+The million Quai question is of course: how can they determine how much ground each member covered?
 
-An ubiquitous way to capture them is in terms of something called a subblock. Say that we are looking for a nonce below the difficulty target $$T$$, how many nonse that hash below $$2T$$ do we expect? Well, since the hash value is uniformly random, hashing below $$2T$$ is _twice as likely_. So we expect to find _two_ such nonces along the way. More generally, if we churn nonces until we find one that hashes below $$T$$, for any $$x$$ we expect to find $$x$$ nonces that hash below $$xT$$.
+Say that a party member called Seamus found the treasure. Based on this fact alone, it is _impossible_ to distribute the treasure fairly. To see why that is, consider three scenarios: First, all search members worked equally hard, and Seamus lucked upon the treasure. Second, Seamus did all the work, while the rest of the party were... partying, I guess? Third, Seamus was lazing on the beach while everyone else was hard at work, but when he got peckish and went to get a cob of corn, he just happened to stumble into a treasure chest. While all three scenarios should furnish wildly different distributions, in all cases we have the same information: Seamus found the treasure.
 
-It is most common to express $$x$$ as a power of two. For any $$k$$, if the difficulty target is $$T$$, then a $$k$$-_subblock_ is any block whose hash is below $$2^k\cdot T$$.
+So, we need additional information, but _what_ information? What could the treasure hunter provide that would _prove_ how much work they did?
 
-**Remark**: The reason it is defined like this, and not simply as $$k\cdot T$$, is that it is technically easier. In proof of work it is often more natural to talk in terms of _entropy_, which essentially counts _bits_. If $$T$$ happens to be a power of two, $$T=2^m$$, then saying that the output is "smaller than $$T$$" is saying that all digits in the output, except perhaps the least $$m$$ digits, are zero. We allow a $$k$$-subblock to be $$2^k$$ times larger, which means we soften the requirement to allow the least $$m+k$$ digits to be non-zero. That is, a $$k$$-subblock is required to have $$k$$ zeros less than a valid block..
+One idea is to ask all excavators to collect cobs of corn as they go, but trying this, we unsurprisingly find that a vast corn field has **too much corn**. Excavators will rapidly find themselves hauling huge crates of corn, and counting them at the end becomes prohibitively tedious. The analogy, if it wasn't clear, is to ask each miner to provide the entire list of nonces they hashed and the resulting values, proving they indeed computed as many hashes. To fathom how unreasonable this is, recall that a single Antminer produces about **200 trillion hashes per second**.
 
-Say we set $$k=10$$, then finding a $$k$$-subblocks is $$2^{10} \approx 1000$$ easier than finding a block. In other words, we expect about a thousand $$k$$-subblocks to be found in the process of looking for the block. Moreover, the number of subblocks each miner finds should be proportional to the fraction of the work they did. Just like an excavator that covered a twice larger area will find roughly twice as many plastic chips.
+**Question:** You could also argue that collecting all nonces and hashes is actually **much worse**, as validating a nonce requires computing the hash, so arguably, validating all the nonces doesn't just need tons of space, but also the same amount of work that went into actually mining the block. Is this a good argument?
 
-**Exercise**: The analogy I made is not entirely accurate. Can you spot the lie? Assuming that we want to modify the protocol to match the analogy, how would you fix this?
+<details>
+
+<summary>Hint</summary>
+
+Try to find a _probabilistic_ method to provide a very good _approximation_ of the work distribution by only looking at a fraction of the hashes.
+
+</details>
+
+<details>
+
+<summary>Answer</summary>
+
+No, it is not a good argument.
+
+We could validate a heap of nonces by picking a few random nonces and only checking them. How accurate is this approach?
+
+Say that we only check $$k$$ nonces. Also say that someone tries to cheat, they sent us a lot of nonces, but a fraction of  $$\alpha>1$$  of them are real. What are the chances that they escape our detection?
+
+Assuming that $$k$$ is much smaller than the number of hashes. For each hash we check, the probability it is not fake is $$\alpha$$, making the probability all of them are not fake  $$\alpha^k$$.
+
+The key observation here is that the success probability of the fraud only depends on $$\alpha$$ and $$k$$, not on the actual number of nonces.
+
+We can set $$k$$ rather high. The computational cost of our test increases linearly with $$k$$ and (since computing a single hash is very efficient) with a very small constant. So even setting $$k$$ to one-million will not cause anyone to break a sweat.
+
+But let's be modest and analyze $$k=1000$$. What is the probability that we miss an adversary who faked $$0.1\%$$ of their shares? This corresponds to $$\alpha = 0.999$$, so the probability is $$0.999^{1000} \approx 37\%$$.
+
+Too much? By taking $$k=10000$$ this goes down to less than $$0.005\%$$, and adding another zero to $$k$$ makes the result so small that even my scientific calculator just evaluates it to zero.
+
+</details>
+
+We see that only providing the winning nonce is not enough, and providing all of them is way too much. Is there a middle ground?
+
+Consider this idea: Before the search starts, the excavation manager flies over the search area in his helicopter, randomly scattering plastic tokens across the vast corn fields. The number of tokens is tiny compared to the billions upon trillions of stalks of corn, but still large enough to count. Say, ten million of them.
+
+Now, each member of the search excavation can collect these tokens as they encounter them, giving a rough approximation of how much ground they covered. When the treasure is finally recovered, each member will get a share proportional to the number of tokens they found. For example, if Alice, Bobette, and Charline found 3, 5, and 7 tokens, then Bobette will get a fraction of  $$5/(3+5+7)$$, or _one-third,_ of the treasure. Note that we only divide by the number of _found_ tokens.
+
+To translate this intuition to blockchains, recall that [in proof-of-work](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works), attempting to solve the block means changing it a little bit (in particular, a field called the _nonce_, designated for that purpose) and _hashing_ it. The hashing operation will return, for each attempt, a _uniformly random_ number between $$0$$ and $$N-1$$ for some huge $$N$$ (typically, $$N=2^{256}$$). Solving the block means finding a nonce that hashes below some _difficulty target_ $$T$$.
+
+In our search excavation analogy, the members are miners, the ground they cover is the nonces they tried, and the treasure is a nonce that hashes to a number smaller than the difficulty target. But what are the plastic tokens?
+
+An ubiquitous way to capture them is in terms of something called a subblock.&#x20;
+
+Say that we are looking for a nonce that hashes below $$T$$, how many nonces that hash below $$2T$$ do we expect to find along the way?
+
+Well, since the hash value is uniformly random, hashing below $$2T$$ is _twice as likely_. So we expect to find _two_ such nonces along the way. Similarly, we expect to find $$3$$ hashes below $$3T$$ and, more generally, $$n$$ hashes below $$n\cdot T$$.
+
+We usually like $$n$$ to be a power of two, so we assume $$n=2^k$$. If the difficulty target is $$T$$, we call a block with a nonce that causes it to hash below $$2^k\cdot T$$ a $$k$$-_subblock_.
+
+**Question**: What do you think is the reason we use $$k$$-subblocks to refer to blocks that hash below $$2^k\cdot T$$ and not $$k\cdot T$$?
+
+<details>
+
+<summary>Answer</summary>
+
+Because it is often much more natural to think how much a block is eavier/lighter than it should be in terms of _how many leading zeros_ it has, and not the actual numerical value. A $$k$$-subblock has at most $$k$$ more leading zeros than a full block.
+
+In proof of work it is often more natural to talk in terms of _entropy_, which essentially counts _bits_. If $$T$$ happens to be a power of two, $$T=2^m$$, then saying that the output is "smaller than $$T$$" is saying that all digits in the output, except perhaps the least $$m$$ digits, are zero. We allow a $$k$$-subblock to be $$2^k$$ times larger, which means we soften the requirement to allow the least $$m+k$$ digits to be non-zero. That is, a $$k$$-subblock is required to have $$k$$ zeros less than a valid block..
+
+</details>
+
+Say we set $$k=10$$, then finding a $$k$$-subblocks is $$2^{10} \approx 1000$$ easier than finding a block. In other words, we expect about a thousand $$k$$-subblocks to be found in the process of looking for the block. Moreover, the number of subblocks each miner finds should be proportional to the fraction of the work they did. Just like an excavator that covers twice as large an area will find roughly twice as many plastic chips (and the approximation becomes rapidly more accurate as we increase the number of chips).
+
+**Exercise**: The analogy I made is not entirely accurate. Can you spot the lie? How would you modify _the algorithm_ such that it matches the definition?
 
 <details>
 
@@ -182,17 +255,22 @@ If we assume $$2 \log(T) + k \ll \log(N)$$, we get that the dependency between b
 
 </details>
 
-So now the problem seems rather simple, right? Just ask miners to send over their subblocks (which in this context are more commonly called _shares_) to the pool operator, and tally them to divide rewards.
+Subblocks/share seem to be a handy tool indeed to probe the hash rate among miners. But applying it requires more work. For protocols that want to use them on-chain, we need to find a way to include them that will not degrade the security of the network and will not be vulnerable to the same selfish mining attacks that exist in Bitcoin.
 
-Well, it's not that simple. This protocol allows pool operators to cheat. They have no accountability for "losing" some of the shares or lying about shares that do not exist. There is an entire family of protocols designed to reduce the trust element, including PPS+, PPLNS, FPPS, and others.
-
-However, remember that we don't want to build a mining pool; we want to counter selfish mining. So what if we ask each miner to attach all shares they found while mining, and divide the prizes proportionally to the share count? We don't need any trust here, because the shares must be _on-chain_ and thus verifiable by _everyone_. This observation inspired the first protocol we will examine.
+<div align="right"><figure><img src="../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 
 
 ## Grab Me a Fruit, Will Ya?
 
+The first attempt at realizing this approach is attributed to Paas and Shi, who introduced the [FruitChains](https://eprint.iacr.org/2016/916.pdf) protocol.
 
+The idea is straightforward. Create two types of minable objects:
 
+* **Blocks**: which contribute to the weight of the chain, but **do not include transactions or receive rewards**
+* **Fruit**: that include transactions and receive rewards, but **do not contribute to weight and are only confirmed when pointed to by a block**
 
+The mining is cleverly set up (using a trick called "two-for-one PoW") such that miners can mine for fruit and blocks simultaneously, not having to choose what they aim for each time. This is crucial, as forcing miners to decide in advance whether they are now mining for fruit or blocks complicates everything a great deal.
+
+The philosophy is to _decouple the transaction finality from the share count_. Since fruit add no weight,&#x20;
 
