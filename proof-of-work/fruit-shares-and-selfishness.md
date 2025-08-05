@@ -45,7 +45,7 @@ The upshot of the attack, in concrete number form, is summarized in this figure 
 
 $$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it releases at the exact same time the adversary hears of a competing honest block.
 
-We see that even if we assume zero connectivity, an attacker with more than 33% can profitably carry out the attack, while as little as 44% suffices to create a _majority_ of the blocks non-orphaned.&#x20;
+We see that even if we assume zero connectivity, an attacker with more than 33% can profitably carry out the attack, while as little as 42% suffices to create a _majority_ of the blocks non-orphaned.&#x20;
 
 With perfect connectivity, 33% is already enough to create a majority of the non-orphaned blocks, and _any_ perfectly connected attacker has something to gain from a selfish mining attack.
 
