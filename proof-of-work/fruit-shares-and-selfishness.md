@@ -14,7 +14,7 @@ In this post, we present two solutions for selfish mining, the Fruitchain bla bl
 
 Throughout the post, more challenging aspects are posed as answers with solutions. These questions are meant to get your brain gears rotating, but also to clearly mark the more technical comments that might require a bit of formal background. **Skipping these questions entirely will not detract the reading experience, and is recommended on a first read**.
 
-<div align="right"><figure><img src="../.gitbook/assets/image (3).png" alt="" width="375"><figcaption><p>A shellfish miner</p></figcaption></figure></div>
+<figure><img src="../.gitbook/assets/image (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>
 
 ## Selfish Mining Primer
 
@@ -41,7 +41,7 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
 
 $$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it releases at the exact same time the adversary hears of a competing honest block.
 
@@ -55,11 +55,11 @@ A common misconception is that because a 38% attacker can create a majority of t
 
 A successful double-spend attack looks like this:
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 whereas a successful selfish mining attack looks like this:
 
-<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks.
 
@@ -123,27 +123,51 @@ We are not quite there yet.
 
 The first successful attempt at better aligning mining incentives is the [_FruitChains_](https://eprint.iacr.org/2016/916) protocol, introduced in 2016 by Pass and Shi. FruitChains manages to find a little weak, but still rather satisfying, compromise between rationality and honesty. The chain quality property holds, in the sense that an _honest_ miner will earn as much as they should _as long as other miners are honest_.
 
-Wait what? Isn't this exactly what we _don't_ want to assume?
+Wait what? Isn't this precisely what we _don't_ want to assume?
 
 Well, here is the thing: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either.
 
-This guarantee is not quite as strong as the holy grail we want, but it is still a strong improvement over bitcoin.
+However, FruitChains has two drawbacks that make it nearly unusable. The first is that for its security to even guarantee any resilience at all, we need to make **a lot** of shares. Much more than it is reasonable for current networks to support. The second is that the number of **blocks** that we have to wait for before the reward share _starts_ to converge to the mining share is about a third of the number of fruit. To put this in proportion, for the security analysis to kick in, we need about 12.5 **thousand** shares per block, which means we will have to wait for more than 4 thousand blocks before we can say anything about how fair the share is. In Bitcoin, this would take about a month.
 
-The aspect where FruitChains falls short is with statistical convergence. Paas and Shi's analysis shows that to gain reasonable confidence that your share matches your hash rate, you have to wait around **three weeks**.
+<details>
+
+<summary>Is it a limitation of the protocol or the analysis?</summary>
+
+The first limitation, that we need a huge $$\lambda$$, mostly follows from the analysis itself. The theorem proved by Pass and Shi assumes steep relationships between the parameters that increase the required $$\lambda$$ for the analysis even to apply. There is no evidence that the protocol is either safe or unsafe for much smaller values of $$\lambda$$, but follow-up published analyses have not attempted that. Since this is a question of great interest, I carefully assume many people tried and failed.
+
+The second disadvantage, that the convergence time $$k$$ is $$\lambda/3$$, is a bit more established. There is no formal argument that $$k=\Omega(\lambda)$$, but there's compelling evidence:
+
+1. We need this margin of error to ensure that most windows will have enough samples. This is a stronger requirement than just expecting that there are sufficiently many fruit on average.
+2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$k=\Omega(\lambda)$$.
+
+</details>
 
 This remained the state-of-the-art for a while. Literature on selfish-mining-resistant protocols continued to be published, primarily focusing on no-go theorems that demonstrate the vulnerability of various natural approaches to modifying FruitChains. We will mention some of these results as we learn how FruitChains works.
 
-As far as I know, the only new approach to emerge following FruitChains is the very recent [Proportional Reward Splitting](https://arxiv.org/abs/2503.10185) (PRS) — a protocol that is heavily inspired by FruitChains, but takes just enough liberties to stand on its own feet.
+As far as I know, the only new approach to emerge following FruitChains is the very recent [Proportional Reward Splitting](https://arxiv.org/abs/2503.10185) (PRS), authored by a collaboration of the Quai team and Dionysis Zindros (with whom I am already familiar as the coauthor of [NiPoPoWs](https://eprint.iacr.org/2017/963) and [Mining in Log-Space](https://eprint.iacr.org/2021/623)).
 
-PRS introduces two major improvements.
+The PRS protocol is heavily inspired by FruitChains, but takes just enough liberties to stand on its own feet. It introduces two major improvements.
 
-First, it manages to remove the honesty assumption, replacing it with rationality. Note that this is still not the holy grail. Even in PRS, a rational majority alone is not sufficient to ensure chain quality. Even if all miners are rational, this is not guaranteed. What _is_ guaranteed is that if all miners are rational, and none deviates, then a single miner with less than half of the hash rate _gains nothing_ by deviating. The only way to earn from deviating is if there is a majority of deviators. But again, the deviation is not penalized either.
+First, it manages to remove the honesty assumption, replacing it with rationality. Note that this is still not the holy grail. Even in PRS, a rational majority alone is not sufficient to ensure chain quality. Even if all miners are rational, this is not guaranteed. What _is_ guaranteed is that if all miners are rational and none deviates, then a single miner with less than half of the hash rate _gains nothing_ by deviating. The only way to earn from deviating is if there is a majority of deviators. But again, the deviation is not penalized either.
 
-Second, PRS enjoys **much better** statistical convergence. To achieve an error of at most 10%, FruitChains will take around **71 days**, while PRS only needs about **4 hours**. For a 3% error, you will have to wait around **two days** in PRS, while FruitChains requires almost **eight months**.
+Second, and crucially, the security of argument for PRS **does not couple** the number of shares required to attain given confidence to the number of shares per block. In particular, it can be parametrized with as few or as many shares as you want. More shares still provide better convergence, but only because it would take less time to collect **the same number** of shares.
 
-If two days for 3% accuracy still sounds a bit rough, recall that these approximations were computed **for  Bitcoin**. Applying the same protocol to a chain with lower block times will reduce the convergence times by the same factor. For example, Quai Zone chains have a block delay of about 5 seconds, so (assuming you only care about the balance within the zone), the convergence is about 120 times faster, reducing the needed wait time for 3% to about 25 minutes.
+I stress again that this is not the confirmation time, but rather the time it takes to gain confidence that
 
-These advances place PRS as the best way yet to make a chain resistant to selfish mining, but the Quai team is not satisfied. They are now looking into&#x20;
+So PRS provides improvements in two important directions: it reduces some of the honesty assumptions to rationality assumptions, and shortens the convergence times by several orders of magnitude. But in our world, there are no solutions, only trade-offs, and what PRS gains in speed and game-theoretic leniency, it pays back in precision. While FruitChain can, in theory, provide selfish mining resilience against **any** $$\gamma=0$$ attacker with less than half of the hashrate, PRS can only provide such security (though with softer assumptions) for miners with at most  $$\sim 40\%$$ of the total hashrate.
+
+For comparison, in Bitcoin, for $$\gamma=0$$ the Eyal-Sirer strategy has a threshold of  $$33\%$$. However, this attack is **not** optimal. A paper by [Sapirshtein and Zohar et al.](https://arxiv.org/abs/1507.06183) isolates the optimal strategies and proves that, for  $$\gamma=0$$, a selfish miner with anywhere above $$25\%$$ of the global can mine profitably.
+
+We can summarize this into the following table:
+
+|                                         | Bitcoin                                                                                                      | FruitChain                                                       | PRS                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------- |
+| Selfish mining threshold ($$\gamma=0$$) | <p><span class="math">25\%</span><br>(<a href="https://arxiv.org/abs/1507.06183">Sapirshtein et al.</a>)</p> | $$50\%$$                                                         | $$38\%-42\%$$               |
+| Rationality/Honesty assumptions         |                                                                                                              | Honest majority                                                  | **Rational** majority       |
+| Required shares/block                   |                                                                                                              | <p><span class="math">~1.4\cdot 10^5</span><br>(impractical)</p> | **No requirement**          |
+| Number of samples needed                |                                                                                                              | Grows with fruits/block                                          | Independent of fruits/block |
+
+These advances arguably place PRS as the best way yet to make a chain resistant to selfish mining, but the Quai team is not satisfied. They are now looking into removing the remaining honesty assumptions and only rely on rationality. We will survey why and how at the end of the post.
 
 ### Marco? Polo!
 
@@ -259,20 +283,81 @@ If we assume $$2 \log(T) + k \ll \log(N)$$, we get that the dependency between b
 
 Subblocks/share seem to be a handy tool indeed to probe the hash rate among miners. But applying it requires more work. For protocols that want to use them on-chain, we need to find a way to include them that will not degrade the security of the network and will not be vulnerable to the same selfish mining attacks that exist in Bitcoin.
 
-<div align="right"><figure><img src="../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="center"><figure><img src="../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 
 
 ## Grab Me a Fruit, Will Ya?
 
-The first attempt at realizing this approach is attributed to Paas and Shi, who introduced the [FruitChains](https://eprint.iacr.org/2016/916.pdf) protocol.
+The idea of FruitChains is to define two types of blocks.
 
-The idea is straightforward. Create two types of minable objects:
+**Fruit**: "light" types of blocks that are easier to produce (one might say that these fruit are lower-hanging). Each fruit contains the following data:
 
-* **Blocks**: which contribute to the weight of the chain, but **do not include transactions or receive rewards**
-* **Fruit**: that include transactions and receive rewards, but **do not contribute to weight and are only confirmed when pointed to by a block**
+* A list of transactions
+* A pointer to a basket block (which we'll define very soon) that I will call its **harvest time**
 
-The mining is cleverly set up (using a trick called "two-for-one PoW") such that miners can mine for fruit and blocks simultaneously, not having to choose what they aim for each time. This is crucial, as forcing miners to decide in advance whether they are now mining for fruit or blocks complicates everything a great deal.
+**Basket (these are just called "blocks" in the actual paper, but I find this confusing)**: a basket block is a block that _packs fruit_. Each basket contains the following data:
 
-The philosophy is to _decouple the transaction finality from the share count_. Since fruit add no weight,&#x20;
+* A list of fruit that this basket packs
+* A subset of the transactions in these fruits that does not contain any conflicts
+* A pointer to another basket.
+
+So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include transactions. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
+
+<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+
+Note that each fruit has exactly one harvest time and is packed into at most one basket. However, some of the fruit, even though a bit old, are not packed into any basket. This is a crucial part of the honest assumption: baskets are not **required** to pack any fruit, and are not even **incentivized** to do so. They are not **penalized** for packing fruit either, so it is not entirely outlandish to expect _honest_ miners to pack them, but it is far from ideal. We will dive into the dynamics of this process shortly.
+
+The analogy to Bitcoin should roughly be something like this: baskets replace blocks, and fruits replace _transaction data_. When choosing the heaviest chain, we disregard fruit completely. _After_ selecting the chain, the baskets are processed along with the fruit, and rewards are distributed.
+
+So how are rewards distributed? Simply. Each fruit is worth the same reward (at least assuming we weren't unfortunate enough to do our analysis exactly during a halving), which goes (along with the transaction fees) to whoever mined the fruit. The **entire point** is that fruits provide higher resolution samples for how the work is divided. Rewarding any other way will undermine this goal.
+
+"But wait?" I hear you say, if miners don't get any advantage for packing fruits other than their own, why should they even bother? Isn't it just a wasted effort?&#x20;
+
+Eh, yeah, we'll get to that...
+
+So the affluence of fruit represents rewards, while the scarcity of blocks represents weight. Sounds kind of familiar, doesn't it? Of course, _the fruits are the plastic chips from the previous analogy_. But how well do they work?
+
+Before we dive into the incentives, there is one more crucial aspect to introduce: freshness. It is not ostensibly clear why freshness matters, and in fact, it might seem like an arbitrary imposition, but it is actually very important. The freshness threshold is the valve that trades off fairness with responsiveness. The _freshness_ from the point of view of a given block is just how long it has been since the fruit was harvested. (The term is a bit misleading, as fresher fruits have _lower_ freshness. I would rather call it _ripeness_. But it is what it is.)
+
+The freshness threshold tells us how fresh a fruit must be to be valid. After that point, it becomes _spoiled_, and surely any sensible person will agree that a fruit basket that packs spoiled fruit is invalid. Here is an illustration for a freshness threshold of three:
+
+<figure><img src="../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+
+With that, we understand all of the ingredients and rules that define the FruitChain protocol. So let us try to understand what it achieves.
+
+<details>
+
+<summary>FruitChains protocol summary</summary>
+
+### Parameters
+
+* Freshness bound $$R$$  (a.k.a recency bounded) — how long since harvesting a fruit remains fresh
+* Fruit rate $$\lambda$$ — expected number of fruit per single block delay
+
+### Minable objects
+
+**Fruits** and **baskets**:
+
+|                      | Basket                                                                                                                               | Fruit                                                                                                                                                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Difficulty**       | High                                                                                                                                 | Low ($$\lambda$$ times easier than a basket)                                                                                                                                                                       |
+| **Fields**           | <ul><li>Parent</li><li>List of packed fruit</li><li>List of transactions</li></ul>                                                   | <ul><li>Harvest point</li></ul><ul><li>List of txns</li></ul><ul><li>Receiver address</li></ul>                                                                                                                    |
+| **Weight**           | Fixed                                                                                                                                | **None**                                                                                                                                                                                                           |
+| **Rewards**          | **None**                                                                                                                             | Fixed, distributed to fruit miner when packed into a basket                                                                                                                                                        |
+| **Validation Rules** | <ul><li>Packed fruit are fresh</li><li>Transactions contained in packed fruits</li><li>Transactions consistent with parent</li></ul> | <ul><li>Valid harvest point</li><li>Transactions consistent with harvest point</li><li><p>Packed fruits are fresh (harvest time at most <span class="math">R</span> blocks below mined block)</p><p></p></li></ul> |
+
+### Honest miners
+
+We define honest behaviour as follows:
+
+* Mine fruits and baskets **simultaneously**
+* The fruits and baskets are valid
+* The fruit harvest point is always the heaviest basket
+* The basket contains all known, still fresh, yet to be packed fruit
+* Once a fruit or a basket is discovered, it is immediately broadcast to the entire network
+
+</details>
+
+### The Advantages
 
