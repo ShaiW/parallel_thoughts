@@ -127,7 +127,7 @@ Wait what? Isn't this precisely what we _don't_ want to assume?
 
 Well, here is the thing: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either.
 
-However, FruitChains has two drawbacks that make it nearly unusable. The first is that for its security to even guarantee any resilience at all, we need to make **a lot** of shares. Much more than it is reasonable for current networks to support. The second is that the number of **blocks** that we have to wait for before the reward share _starts_ to converge to the mining share is about a third of the number of fruit. To put this in proportion, for the security analysis to kick in, we need about 12.5 **thousand** shares per block, which means we will have to wait for more than 4 thousand blocks before we can say anything about how fair the share is. In Bitcoin, this would take about a month.
+However, FruitChains has one drawback that makes it nearly unusable. For its security to guarantee any resilience at all, we need to make **a lot** of shares. The lowest number known to provide any security is about 13.8 **thousand** shares per block. Much more than it is reasonable for current networks to support. For the security analysis to kick in, we need about 13.8 **thousand** shares per block. In Bitcoin, this comes up 23 shares (that nodes need to gossip, validate, and store) **per second**. If we assume that the average share is about 120 bytes large (though it is actually much larger in FruitChains since, as we will see, the shares contain transaction data), this comes up to storing about 100 GB a year in share data alone.
 
 <details>
 
@@ -135,10 +135,10 @@ However, FruitChains has two drawbacks that make it nearly unusable. The first i
 
 The first limitation, that we need a huge $$\lambda$$, mostly follows from the analysis itself. The theorem proved by Pass and Shi assumes steep relationships between the parameters that increase the required $$\lambda$$ for the analysis even to apply. There is no evidence that the protocol is either safe or unsafe for much smaller values of $$\lambda$$, but follow-up published analyses have not attempted that. Since this is a question of great interest, I carefully assume many people tried and failed.
 
-The second disadvantage, that the convergence time $$k$$ is $$\lambda/3$$, is a bit more established. There is no formal argument that $$k=\Omega(\lambda)$$, but there's compelling evidence:
+The second disadvantage, that the convergence time $$k$$ is $$\lambda/3$$, is a bit more established. There is no formal argument that $$\lambda=\Omega(k)$$, but there's compelling evidence:
 
 1. We need this margin of error to ensure that most windows will have enough samples. This is a stronger requirement than just expecting that there are sufficiently many fruit on average.
-2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$k=\Omega(\lambda)$$.
+2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$\lambda=\Omega(k)$$.
 
 </details>
 
@@ -160,12 +160,12 @@ For comparison, in Bitcoin, for $$\gamma=0$$ the Eyal-Sirer strategy has a thres
 
 We can summarize this into the following table:
 
-|                                         | Bitcoin                                                                                                      | FruitChain                                                       | PRS                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------- |
-| Selfish mining threshold ($$\gamma=0$$) | <p><span class="math">25\%</span><br>(<a href="https://arxiv.org/abs/1507.06183">Sapirshtein et al.</a>)</p> | $$50\%$$                                                         | $$38\%-42\%$$               |
-| Rationality/Honesty assumptions         |                                                                                                              | Honest majority                                                  | **Rational** majority       |
-| Required shares/block                   |                                                                                                              | <p><span class="math">~1.4\cdot 10^5</span><br>(impractical)</p> | **No requirement**          |
-| Number of samples needed                |                                                                                                              | Grows with fruits/block                                          | Independent of fruits/block |
+|                                                                             | Bitcoin                                                                                                      | FruitChain                                                                                                                                                                            | PRS                   |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| Selfish mining threshold ($$\gamma=0$$)                                     | <p><span class="math">25\%</span><br>(<a href="https://arxiv.org/abs/1507.06183">Sapirshtein et al.</a>)</p> | $$50\%$$                                                                                                                                                                              | $$38\%-42\%$$         |
+| Rationality/Honesty assumptions                                             |                                                                                                              | Honest majority                                                                                                                                                                       | **Rational** majority |
+| <p>Required shares/block in terms of desired confidence<br>(asymptotic)</p> |                                                                                                              | <p>Grows with desired accuracy<br>(at least <span class="math">3k</span> where <span class="math">k</span> is the number of samples required to guarantee the desired confidence)</p> | **Independent**       |
+| Required shares/block for $$10\%$$ accuracy for a $$1\%$$ miner             |                                                                                                              | <p><span class="math">~1.4\cdot 10^5</span><br>(impractical)</p>                                                                                                                      | **No requirement**    |
 
 These advances arguably place PRS as the best way yet to make a chain resistant to selfish mining, but the Quai team is not satisfied. They are now looking into removing the remaining honesty assumptions and only rely on rationality. We will survey why and how at the end of the post.
 
