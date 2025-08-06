@@ -4,6 +4,8 @@ description: What are selfish mining, subshares, and PRS?
 
 # Fruit, Shares, and Selfishness
 
+
+
 > **Acknowledgement**
 >
 > This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund proof-of-work education.
@@ -11,6 +13,8 @@ description: What are selfish mining, subshares, and PRS?
 \[This post is **not complete**. If you conicidentally found your way here looking for information, **you are early**. I hope to finish it by the second weekend of August]
 
 In this post, we present two solutions for selfish mining, the Fruitchain bla bla bla
+
+("FruitChains is the granddaddy of incentive alignment in proof-of-work. For all its practical limitations, it is a highly important result from a theoretical standpoint. etc. etc.")
 
 Throughout the post, more challenging aspects are posed as answers with solutions. These questions are meant to get your brain gears rotating, but also to clearly mark the more technical comments that might require a bit of formal background. **Skipping these questions entirely will not detract the reading experience, and is recommended on a first read**.
 
@@ -128,19 +132,6 @@ Wait what? Isn't this precisely what we _don't_ want to assume?
 Well, here is the thing: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either.
 
 However, FruitChains has one drawback that makes it nearly unusable. For its security to guarantee any resilience at all, we need to make **a lot** of shares. The lowest number known to provide any security is about 13.8 **thousand** shares per block. Much more than it is reasonable for current networks to support. For the security analysis to kick in, we need about 13.8 **thousand** shares per block. In Bitcoin, this comes up 23 shares (that nodes need to gossip, validate, and store) **per second**. If we assume that the average share is about 120 bytes large (though it is actually much larger in FruitChains since, as we will see, the shares contain transaction data), this comes up to storing about 100 GB a year in share data alone.
-
-<details>
-
-<summary>Is it a limitation of the protocol or the analysis?</summary>
-
-The first limitation, that we need a huge $$\lambda$$, mostly follows from the analysis itself. The theorem proved by Pass and Shi assumes steep relationships between the parameters that increase the required $$\lambda$$ for the analysis even to apply. There is no evidence that the protocol is either safe or unsafe for much smaller values of $$\lambda$$, but follow-up published analyses have not attempted that. Since this is a question of great interest, I carefully assume many people tried and failed.
-
-The second disadvantage, that the convergence time $$k$$ is $$\lambda/3$$, is a bit more established. There is no formal argument that $$\lambda=\Omega(k)$$, but there's compelling evidence:
-
-1. We need this margin of error to ensure that most windows will have enough samples. This is a stronger requirement than just expecting that there are sufficiently many fruit on average.
-2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$\lambda=\Omega(k)$$.
-
-</details>
 
 This remained the state-of-the-art for a while. Literature on selfish-mining-resistant protocols continued to be published, primarily focusing on no-go theorems that demonstrate the vulnerability of various natural approaches to modifying FruitChains. We will mention some of these results as we learn how FruitChains works.
 
@@ -332,7 +323,7 @@ With that, we understand all of the ingredients and rules that define the FruitC
 
 ### Parameters
 
-* Freshness bound $$R$$  (a.k.a recency bounded) — how long since harvesting a fruit remains fresh
+* Freshness bound $$k$$  (a.k.a recency bound) — how long since harvesting a fruit remains fresh
 * Fruit rate $$\lambda$$ — expected number of fruit per single block delay
 
 ### Minable objects
@@ -359,5 +350,94 @@ We define honest behaviour as follows:
 
 </details>
 
-### The Advantages
+
+
+<details>
+
+<summary>Ah yes, the two types of freshness</summary>
+
+We actually made a simplifying assumption in our description of the honest strategy: that the freshness miners expect is the same as the freshness limit.
+
+In practice, it is more reasonable to set some  $$R\ge k$$ as the maximal allowed freshness, but only expect honest miners to pack fruit that are at most $$k$$ fresh. The region $$R>k$$ is relevant when the fruit rate is comparable to (or faster than) the network delay. We ignore this aspect in our exposition.
+
+</details>
+
+### Fairness
+
+The main result of Pass-Shi is that if FruitChains is parameterized correctly, and more than half of miners are _honest_, then selfish mining is impossible. In this section we make this statement progressively more precise and see what we run into.
+
+First, we define a convenient term called $$\delta$$-fairness. Consider a miner with $$\alpha$$ of the global hash power. Then for any $$\delta>0$$ we say that the miner has $$\delta$$-fairness if we know that if we look at a long enough window, we are almost surely guaranteed that the miner collected at most $$\alpha(1+\delta)$$ of the rewards (that is, outside their honest cut, they had a surplus of $$\delta\cdot\alpha$$). Moreover, the time we would have to wait only depends on $$\delta$$ and $$\alpha$$.
+
+The most immediate observation is that $$\alpha$$-fairness cannot hold for $$0.5<\alpha<1$$ simply because an attacker with the majority of the hash power can ensure they create _all_ of the blocks.
+
+Using $$\delta$$-fairness, we can make the security statement a bit more precise: if the protocol is parameterized correctly, then $$\delta$$-fairness is guaranteed for any $$\alpha<0.5$$ adversary, given that a majority of the network is honest.
+
+This is starting to take shape, but as we illuminate more details, we will uncover the practical limitations of FruitChains.
+
+#### Almost Surely?
+
+For those less familiar with how security is usually defined in probabilistic settings, the "almost surely" above might sound reckless. But the fact is that it is 1. not so bad (in properly secure protocols) and 2. unavoidable.
+
+This relates to a profound and ubiquitous principle in computer science often described as "no free lunch", or as "probably almost correct" (PAC, yes, _the_ PAC in "PAC learning"). This is usually notated with  $$\varepsilon,\delta>0$$$$\e\delta$$ where "almost correct" means "correct up to a factor of  $$(1+\delta)$$", and "probably" means "with a probability of at least $$1-\varepsilon$$".
+
+Typically, we can assume $$\varepsilon$$ to be exponentially small, which means that we write it in the form $$2^{-\kappa}$$, where the number $$\kappa$$ is usually called "bits of confidence". Saying that you have "$$\kappa$$ bits of confidence" is the same as saying "the probability that I am wrong is not higher than the probability that you flip a fair coin $$\kappa$$ times and it always lands on tails". We will use this notation going forward.
+
+#### What does "parameterized correctly" mean?
+
+Parameterized correctly means that the parameters we choose are within the regimes covered by the analysis. In the theorem, the "parameterized correctly" condition is replaced with the following assumptions:
+
+$$
+\begin{aligned}k\ge\frac{36\kappa}{\delta} & , & \lambda\ge3k\end{aligned}
+$$
+
+Let's try to understand what this means. As a start, let's get rid of $$\kappa$$ by fixing the number of bits of security that we want. For leniency, let's go with $$\kappa = 50$$ (which is a bit low) which slightly simplifies the above to:
+
+$$
+\begin{aligned}k\ge\frac{1800}{\delta} & , & \lambda\ge3k\end{aligned}
+$$
+
+This large factor doesn't sit quite right, but lets see what more it entails.
+
+Say that we want to assure $$0.1$$-fairness. That is, that in an honest majority setting, the selfish miner cannot increase their profit fraction by more than $$\alpha/10$$. Note that $$10\%$$ is very lenient, and in practice we want much smaller adversarial leeway. However, the entire point is that even if we try to accommodate the protocol with low expectations, we still run into impractical requirements.
+
+Plugging $$\delta = 1/10$$ into the first inequality we get that $$k\ge 18000$$, and plugging that into the second inequality gives us $$\lambda \ge 54000$$.
+
+That is, even our lenient expectations (tolerating $$10\%$$ unfairness and only requiring 50 bits of security) require tens of thousands of fruit to be produced with every single block! We already explained above why this is highly impractical.
+
+<details>
+
+<summary>Is it a limitation of the protocol or the analysis?</summary>
+
+The first limitation, that we need a huge $$\lambda$$, mostly follows from the analysis itself. The theorem proved by Pass and Shi assumes steep relationships between the parameters that increase the required $$\lambda$$ for the analysis even to apply. There is no evidence that the protocol is either safe or unsafe for much smaller values of $$\lambda$$, but follow-up published analyses have not attempted that. Since this is a question of great interest, I carefully assume many people tried and failed.
+
+The second disadvantage, that the required number of shares per block $$\lambda$$ is at least $$3k$$, is a bit more established. There is no formal argument that $$\lambda=\Omega(k)$$, but there's compelling evidence:
+
+1. We need this margin of error to ensure that most windows will have enough samples. This is a stronger requirement than just expecting that there are sufficiently many fruit on average.
+2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$\lambda=\Omega(k)$$.
+
+</details>
+
+#### How long do we have to wait?
+
+Trying to compute how long we have to wait before we can be assured of $$\delta$$-confidence, we find an unsatisfying answer: one-third of a block delay.
+
+Hmm, what? That actually sounds kind of short.
+
+Well, that's because we walked face-first into an optical illusion by asking "how long" and not "how many samples". Because samples are what gives us confidence, not time. In this case, the "speed" is a result of compressing unreasonably many fruit into a single block delay.
+
+<details>
+
+<summary>But how fast <em>will</em> I reach fairness if I try to create these many fruit?</summary>
+
+If you try, you will find that the dominant factor becomes the _gossip time_, or "how long will it take for the network to hear of all these fruit". It is intuitive that this should be the case, but it also corroborated in Pass-Shi.
+
+The math of gossip times is a classic problem of computer networks that predates blockchains. It is a bit gritty, but we can crudely say that as you increase $$\lambda$$ (witout changing the block delay), you create congestion that causes the gossip time to increase _superlinearly_. Since tens of thousands of fruit are about two orders of magnitude more data than what current networks can support, trying to use the above parameters will result in a big, extremely delayed mess.
+
+</details>
+
+So the real lesson here is that to gain the required confidence, we need to wait for $$18000$$ fruits. That's a lot of fruit.
+
+#### Why is honesty essential?
+
+
 
