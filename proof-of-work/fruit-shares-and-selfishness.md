@@ -402,7 +402,7 @@ Say that we want to assure $$0.1$$-fairness. That is, that in an honest majority
 
 Plugging $$\delta = 1/10$$ into the first inequality we get that $$k\ge 18000$$, and plugging that into the second inequality gives us $$\lambda \ge 54000$$.
 
-That is, even our lenient expectations (tolerating $$10\%$$ unfairness and only requiring 50 bits of security) require tens of thousands of fruit to be produced with every single block! We already explained above why this is highly impractical.
+That is, even our lenient expectations (tolerating $$10\%$$ unfairness and only requiring 50 bits of security) require tens of thousands of fruit to be produced with every single block! Also, do note that fruits stay fresh for a _very_ long time. This is bad for convergence.
 
 <details>
 
@@ -423,7 +423,7 @@ Trying to compute how long we have to wait before we can be assured of $$\delta$
 
 Hmm, what? That actually sounds kind of short.
 
-Well, that's because we walked face-first into an optical illusion by asking "how long" and not "how many samples". Because samples are what gives us confidence, not time. In this case, the "speed" is a result of compressing unreasonably many fruit into a single block delay.
+Well, that's because we walked face-first into an optical illusion by asking "how long" and not "how many samples". _Samples_ increase our confidence, not time. But when transmitting so many fruits in such a short time frame, the limitations of the network kick in, increasing the time it would take sufficient samples to reach you.
 
 <details>
 
@@ -438,6 +438,26 @@ The math of gossip times is a classic problem of computer networks that predates
 So the real lesson here is that to gain the required confidence, we need to wait for $$18000$$ fruits. That's a lot of fruit.
 
 #### Why is honesty essential?
+
+Say that you are a rational miner in an otherwise honest world. Would you necessarily pack _all_ possible fruit? It is clearly irrational to compromise the packing of _your_ fruit, so you will at least pack these. But what about the rest? You don't _lose_ anything from omitting all other fruit, but can you _gain_ from it?
+
+The nitpicky reader might exclaim that packing additional fruit is a wasted effort, making your block traverse the network slower, thereby increasing orphaning probability. And they would be correct, but to a minimal extent that I am willing to ignore.&#x20;
+
+Other than that, there doesn't seem to be anything to gain from not packing other fruit. You know that a majority of the network packs each other's fruit. It is true that if you exclude their fruit, you very temporarily increase your fraction of the gain by delaying everybody else's fruit whenever you publish a block. But you also know that the ripeness window is so long that their fruit will very likely be included by the honest majority very soon. Hence, your little rebellious unpacking act has practically zero effect within at most $$k$$ blocks. The same logic seems to apply to pretty much whatever we try to do to gain some advantage, and the Paas-Shi analysis translates "seems to" and "pretty much whatever" to "does" and "all".
+
+But what happens if we remove the honesty assumption?
+
+Now you don't know that other miners include your fruit. But why should you care? Why do they pose a threat? I mean, just a second ago, it was _you_ who refused to pack _their_ fruit, and we concluded that you pose no threat. So how come they pose a threat to _you_?
+
+Consider the extreme situation: miners who only point to their own fruits. Where does this put us?
+
+Well, if miners only point to their own fruit, then we might as well assume that the basket and the fruit can be treated as a single unit. A unit that contains both the fruit created since the previous basket and the basket itself. Providing both transaction data and weight. In other words, we get a block.
+
+Yes, by assuming miners don't pack other miners' fruits, we reduced FruitChains back to Bitcoin. And now selfish mining attacks _are_ possible again.
+
+Now, even outside this scenario, the mere possibility shows that there is plausibly something to be gained by dropping _some_ fruit and applying _some_ _sort_ of withholding strategy. This undermines the assumption that a majority of miners include all fruit, as it is not dictated by rationality. And indeed, there are quite large domains (in terms of hashrate distribution) where the honest strategy is demonstrably losing.
+
+
 
 
 
