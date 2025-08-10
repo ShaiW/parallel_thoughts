@@ -85,11 +85,13 @@ The key hidden detail here is how long we need to wait before the fraction becom
 
 Yes! The "real" name of the property (in a notation slightly more approachable than GKL's) is $$\ell$$-chain $$\alpha$$-quality, where $$\alpha$$ is a number between zero and one representing the fraction of an arbitrary, possibly selfish miner while the rest are assumed honest, and $$\ell$$ is a positive integer designating how many blocks we look at when we check for fairness.
 
-In other words, we can define $$e_{\ell,\alpha}$$  to be the expected proportion of blocks out of the next $$\ell$$ blocks that were created by the $$\alpha$$-miner, and we define $$\mu$$-chain-quality to be the case where $$e_{\ell,\alpha}$$ approaches the constant $$\alpha$$ (that is, the _variance_ vanishes) as $$\ell$$ increases.
+In other words, we can define $$e_{\ell,\alpha}$$  to be the expected proportion of blocks out of the next $$\ell$$ blocks that were created by the $$\alpha$$-miner, and we define $$\alpha$$-chain-quality to be the case where $$e_{\ell,\alpha}$$ approaches the constant $$\alpha$$ (that is, the _variance_ vanishes) as $$\ell$$ increases (GKL's definition is actually stronger, and guarantees a _deterministic_ upper bound, but this version is accurate enough for our purposes).
 
 Having _ideal_ chain quality is the same as having $$\alpha$$-chain-quality for any $$\alpha<0/5$$.
 
-GKL note that Bitcoin does have perfect _honest_ chain-quality. That is, in case everyone follows the protocol, the reward is distributed fairly. They also note that Eyal and Sirer's attack proves that Bitcoin does not have ideal chain quality. Even if we assume a very poorly connected miner ($$\gamma = 0$$), Eyal-Sirer tells us we can hope for at most $$1/3$$-chain-quality, and for a perfectly connected adversary ($$\gamma=1$$) there's no $$\alpha$$-chain-quality for _any_ $$\alpha>0$$.
+GKL note that Bitcoin does have perfect _honest_ chain-quality. That is, in case everyone follows the protocol, the reward is distributed fairly. But this is a trivial statement that we know already. The analysis gets interesting when the $$\alpha$$-miner is _arbitrary_, and in particular may be adversarial.
+
+Eyal and Sirer's attack proves that Bitcoin does not have ideal chain quality. Even if we assume a very poorly connected miner ($$\gamma = 0$$), Eyal-Sirer tells us we can hope for at most $$1/3$$-chain-quality, and for a perfectly connected adversary ($$\gamma=1$$) there's no $$\alpha$$-chain-quality for _any_ $$\alpha>0$$. GKS extend the analysis to provide more accurate lower bounds on a worst-case attacker.
 
 Note that the chain quality does not quantify _how profitable_ selfish-mining is (for that there's the $$\delta$$-fairness property we will discuss a bit later), nor does it care about _how quickly_ we obtain fairness, that is, how large do we need $$\ell$$  to be to accurately estimate $$\alpha$$ by observing $$\ell$$ blocks. This will also come up a bit later.
 
