@@ -93,6 +93,8 @@ GKL note that Bitcoin does have perfect _honest_ chain-quality. That is, in case
 
 Note that the chain quality does not quantify _how profitable_ selfish-mining is (for that there's the $$\delta$$-fairness property we will discuss a bit later), nor does it care about _how quickly_ we obtain fairness, that is, how large do we need $$\ell$$  to be to accurately estimate $$\alpha$$ by observing $$\ell$$ blocks. This will also come up a bit later.
 
+(Note that $$\ell$$ can depend on $$\alpha$$, and indeed it must be the case that $$\ell$$ increases as $$\alpha$$ approaches $$1/2$$, even for a fixed confidence.)
+
 </details>
 
 ### Selfish Generals?
@@ -172,7 +174,7 @@ We can summarize this into the following table:
 | Selfish mining threshold ($$\gamma=0$$)                                     | <p><span class="math">25\%</span><br>(<a href="https://arxiv.org/abs/1507.06183">Sapirshtein et al.</a>)</p> | $$50\%$$                                                                                                                                                                              | $$38\%-42\%$$         |
 | Rationality/Honesty assumptions                                             |                                                                                                              | Honest majority                                                                                                                                                                       | **Rational** majority |
 | <p>Required shares/block in terms of desired confidence<br>(asymptotic)</p> |                                                                                                              | <p>Grows with desired accuracy<br>(at least <span class="math">3k</span> where <span class="math">k</span> is the number of samples required to guarantee the desired confidence)</p> | **Independent**       |
-| Required shares/block for $$10\%$$ accuracy for a $$1\%$$ miner             |                                                                                                              | <p><span class="math">~1.4\cdot 10^5</span><br>(impractical)</p>                                                                                                                      | **No requirement**    |
+| Required shares/block for $$10\%$$ accuracy for a $$1\%$$ miner             |                                                                                                              | <p><span class="math">\sim 10^4</span><br>(impractical)</p>                                                                                                                           | **No requirement**    |
 
 These advances arguably place PRS as the best way yet to make a chain resistant to selfish mining, but the Quai team is not satisfied. They are now looking into removing the remaining honesty assumptions and only rely on rationality. We will survey why and how at the end of the post.
 
