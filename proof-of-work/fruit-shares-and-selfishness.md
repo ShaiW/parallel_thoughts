@@ -75,9 +75,25 @@ It is natural to [define a security notion](https://shai-deshe.gitbook.io/pow-bo
 
 In that paper, they introduce the _chain quality_ property. The precise definition is a bit technical, but the gist is this:
 
-**Definition** (reproduced from Definition 4 in [GKL](https://eprint.iacr.org/2014/765), simplified, informal): A blockchain has the chain quality property if the amount of non-orphaned blocks produced by a miner with a fraction $$\alpha$$ of the global hashrate gets closer to a fraction of $$\alpha$$ of the blocks as time passes.
+**Definition** (reproduced from Definition 4 in [GKL](https://eprint.iacr.org/2014/765), simplified, informal): A blockchain has _ideal_ chain-quality if the amount of non-orphaned blocks produced by a miner with a fraction $$\alpha$$ of the global hashrate gets closer to a fraction of $$\alpha$$ of the blocks as time passes.
 
-The key hidden detail here is how long we need to wait before the fraction becomes sufficiently close to $$\alpha$$. GKL did not answer this question for a straightforward reason: Bitcoin does _not_ satisfy the chain-quality property.
+The key hidden detail here is how long we need to wait before the fraction becomes sufficiently close to $$\alpha$$. GKL did not answer this question for a straightforward reason: Bitcoin does _not_ satisfy the _ideal_ chain-quality property.
+
+<details>
+
+<summary>Is there "non-ideal" chain quality?</summary>
+
+Yes! The "real" name of the property (in a notation slightly more approachable than GKL's) is $$\ell$$-chain $$\alpha$$-quality, where $$\alpha$$ is a number between zero and one representing the fraction of an arbitrary, possibly selfish miner while the rest are assumed honest, and $$\ell$$ is a positive integer designating how many blocks we look at when we check for fairness.
+
+In other words, we can define $$e_{\ell,\alpha}$$  to be the expected proportion of blocks out of the next $$\ell$$ blocks that were created by the $$\alpha$$-miner, and we define $$\mu$$-chain-quality to be the case where $$e_{\ell,\alpha}$$ approaches the constant $$\alpha$$ (that is, the _variance_ vanishes) as $$\ell$$ increases.
+
+Having _ideal_ chain quality is the same as having $$\alpha$$-chain-quality for any $$\alpha<0/5$$.
+
+GKL note that Bitcoin does have perfect _honest_ chain-quality. That is, in case everyone follows the protocol, the reward is distributed fairly. They also note that Eyal and Sirer's attack proves that Bitcoin does not have ideal chain quality. Even if we assume a very poorly connected miner ($$\gamma = 0$$), Eyal-Sirer tells us we can hope for at most $$1/3$$-chain-quality, and for a perfectly connected adversary ($$\gamma=1$$) there's no $$\alpha$$-chain-quality for _any_ $$\alpha>0$$.
+
+Note that the chain quality does not quantify _how profitable_ selfish-mining is (for that there's the $$\delta$$-fairness property we will discuss a bit later), nor does it care about _how quickly_ we obtain fairness, that is, how large do we need $$\ell$$  to be to accurately estimate $$\alpha$$ by observing $$\ell$$ blocks. This will also come up a bit later.
+
+</details>
 
 ### Selfish Generals?
 
