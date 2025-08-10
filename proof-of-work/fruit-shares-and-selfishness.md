@@ -83,11 +83,15 @@ The key hidden detail here is how long we need to wait before the fraction becom
 
 <summary>Is there "non-ideal" chain quality?</summary>
 
-Yes! The "real" name of the property (in a notation slightly more approachable than GKL's) is $$\ell$$-chain $$\alpha$$-quality, where $$\alpha$$ is a number between zero and one representing the fraction of an arbitrary, possibly selfish miner while the rest are assumed honest, and $$\ell$$ is a positive integer designating how many blocks we look at when we check for fairness.
+Yes!&#x20;
+
+The GKL analytical framework (the so-called "Bitcoin backbone protocol") makes two assumptions: semi-asynchronisity (the network delay is bounded), and honest majority.
+
+In this framework, the "real" property we're after (in a notation slightly more approachable than GKL's) is $$\ell$$-chain $$\alpha$$-quality, where $$\alpha$$ is a number between zero and one representing the fraction of an arbitrary, possibly selfish miner while, and $$\ell$$ is a positive integer designating how many blocks we look at when we check for fairness.
 
 In other words, we can define $$e_{\ell,\alpha}$$  to be the expected proportion of blocks out of the next $$\ell$$ blocks that were created by the $$\alpha$$-miner, and we define $$\alpha$$-chain-quality to be the case where $$e_{\ell,\alpha}$$ approaches the constant $$\alpha$$ (that is, the _variance_ vanishes) as $$\ell$$ increases (GKL's definition is actually stronger, and guarantees a _deterministic_ upper bound, but this version is accurate enough for our purposes).
 
-Having _ideal_ chain quality is the same as having $$\alpha$$-chain-quality for any $$\alpha<0/5$$.
+Having _ideal_ chain quality is the same as having $$\alpha$$-chain-quality for any $$\alpha<1/2$$.
 
 GKL note that Bitcoin does have perfect _honest_ chain-quality. That is, in case everyone follows the protocol, the reward is distributed fairly. But this is a trivial statement that we know already. The analysis gets interesting when the $$\alpha$$-miner is _arbitrary_, and in particular may be adversarial.
 
@@ -404,25 +408,35 @@ Typically, we can assume $$\varepsilon$$ to be exponentially small, which means 
 
 #### What does "parameterized correctly" mean?
 
-Parameterized correctly means that the parameters we choose are within the regimes covered by the analysis. In the theorem, the "parameterized correctly" condition is replaced with the following assumptions:
+The only two parameters that are hardwired into the protocol are the fruits-per-block-delay $$\lambda$$ and the freshness window $$R$$.
+
+We now choose the accuracy $$\delta$$ and bits of confidence $$\kappa$$. That is, we want the protocol to guarantee that after a long enough period of time (that we will denote $$k$$, counted in block delays) the probability that an $$\alpha$$-miner gained more than $$\alpha(1+\delta)$$ of the emission is at most $$2^{-\kappa}$$.
+
+The constraint "parametrized correctly" means that $$R$$ is "large enough" to make it sufficiently unlikely that $$R$$ consecutive blocks are adversarial. (This is a bit unfortunate, as it forces us to choose a maximal $$\alpha$$ in advance, but that much is true for almost any proof-of-work protocol.)
+
+In math, we obtain the bound
 
 $$
-\begin{aligned}k\ge\frac{36\kappa}{\delta} & , & \lambda\ge3k\end{aligned}
+R\ge\frac{\kappa+\log\left(\lambda\right)}{\log\left(1/\alpha\right)}\text{.}
 $$
 
-Let's try to understand what this means. As a start, let's get rid of $$\kappa$$ by fixing the number of bits of security that we want. For leniency, let's go with $$\kappa = 50$$ (which is a bit low) which slightly simplifies the above to:
+In practice, this bound is _not enough_. But it is very close to the actual bound, and shows that $$R$$ increases with our required confidence, even in excellent network conditions.
+
+This explains how FruitChains can work with $$\lambda=1$$  (which feels equivalent to just mining blocks like Bitcoin). You would have to compensate by waiting a very long time. $$R$$ might not seem to grow _that_ fast, but $$R$$ is _not_ how long we will have to wait. It just lower-bounds it (the time you want can't be shorter than the freshness window).
+
+#### So how long _will_ we have to wait?
+
+We now set out to find $$k$$, the number of _fruits_ we will need to observe before we gain the desired confidence.
+
+The intuition is that $$\lambda\cdot k$$ is the (expected) number of samples available to us for estimating the miner sizes up to an error of $$\delta$$. Due to the central limit theorem, we know that the number of samples we need increases _quadratically_ with the accuracy we want, and _logarithmically_ with the mistake probability we want (that is, _linearly_ with the bits of confidence we want). In other words, we expect that for some sufficiently large constant $$c$$ it suffices to have
 
 $$
-\begin{aligned}k\ge\frac{1800}{\delta} & , & \lambda\ge3k\end{aligned}
+\begin{aligned}\lambda\cdot k\ge c\frac{\kappa}{\delta^{2}} & \implies & k\ge c\frac{\kappa}{\delta^{2}\lambda}\end{aligned}
 $$
 
-This large factor doesn't sit quite right, but lets see what more it entails.
+But to get a concrete number, we need to know $$c$$ (or at least some upper bound). If our samples were taken from a simple Poisson process, then any basic probability proof will tell you that taking $$c$$ to be its standard deviation will work. However, we are analyzing a much more complicated protocols, where many dependencies lurk, biting into the significance of any statistical inference. For example, we need to account for the fact that a miner who only points to her own fruits reduces the probability of other fruits to _ever_ be included, by an amount that depends on many factors including $$k$$ itself. This coupling between the size and meaning of the sample is hard to disentangle, but Pass and Shi's meticulous analysis show that it does not change the _growth_ of the required sample size. In other words, it is entirely rolled into the constant $$c$$.
 
-Say that we want to assure $$0.1$$-fairness. That is, that in an honest majority setting, the selfish miner cannot increase their profit fraction by more than $$\alpha/10$$. Note that $$10\%$$ is very lenient, and in practice we want much smaller adversarial leeway. However, the entire point is that even if we try to accommodate the protocol with low expectations, we still run into impractical requirements.
-
-Plugging $$\delta = 1/10$$ into the first inequality we get that $$k\ge 18000$$, and plugging that into the second inequality gives us $$\lambda \ge 54000$$.
-
-That is, even our lenient expectations (tolerating $$10\%$$ unfairness and only requiring 50 bits of security) require tens of thousands of fruit to be produced with every single block! Also, do note that fruits stay fresh for a _very_ long time. This is bad for convergence.
+A concrete value for $$c$$ is tricky, as it depends on unrolling the analysis, as well as network conditions. I asked ChatGPT5 to upper bound it for me, and she concluded that choosing $$c=100$$ is "very conservative", so for the rest of this section let us assume that $$c=10$$ is enough. (That being said, trusting an AI without verifying its answer yourself is _always_ a bad idea, so if you intend to implement FruitChains, start with finding a more reliable way to parameterize it.)
 
 <details>
 
@@ -437,25 +451,21 @@ The second disadvantage, that the required number of shares per block $$\lambda$
 
 </details>
 
-#### How long do we have to wait?
+With this assumption in mind, we obtain the bound $$k\ge\frac{10\kappa}{\delta^2 \lambda}$$. But since $$k$$ is measured in fruit, and we have (on average) $$\lambda$$ fruit per block, then if we use $$\Lambda$$ to denote the delay between consecutive _baskets,_ we get that the waiting time is
 
-Trying to compute how long we have to wait before we can be assured of $$\delta$$-confidence, we find an unsatisfying answer: one-third of a block delay.
+$$
+T=\frac{\Lambda k}{\lambda}\ge \Lambda\frac{10\kappa}{\delta^2 \lambda^2}
+$$
 
-Hmm, what? That actually sounds kind of short.
+So if we choose $$\lambda=1$$, and say we want 50 bits of confidence (which is actually a bit low) that there's no deviation of more than $$5\%$$ (which is actually a bit high). So we plug $$\kappa=50$$ and $$\delta=0.05$$ into the equation above to get that the waiting time will be **two hundred thousand** block delays. In Bitcoin, that comes up to about a four years. That is, you are more likely to wait longer for convergence than for the next halving!
 
-Well, that's because we walked face-first into an optical illusion by asking "how long" and not "how many samples". _Samples_ increase our confidence, not time. But when transmitting so many fruits in such a short time frame, the limitations of the network kick in, increasing the time it would take sufficient samples to reach you.
+We can try to "cheat" from the other direction, and make $$\lambda$$ very large, so that convergence will be fast.
 
-<details>
+We take more realistic assumptions of $$\kappa=64$$ and $$\delta=0.01$$. And say we want the protocol to converge after $$10$$ block delays. Then we set $$T=10\Lambda$$ in the equation and solve for $$\lambda$$ to get that we want about $$800$$ fruit. Per block.
 
-<summary>But how fast <em>will</em> I reach fairness if I try to create these many fruit?</summary>
+That's an inordinately many fruits. If you try to create this many, you will find that the congestion becomes dominant, effectively increasing $$R$$, and taking $$k$$ along with it. In particular, when developing the inequality, we implicitly assumed that $$k$$ will turn out larger than $$R$$, otherwise the time it takes to gain sufficiently many samples increases, as the networks throughput becomes the dominant factor.
 
-If you try, you will find that the dominant factor becomes the _gossip time_, or "how long will it take for the network to hear of all these fruit". It is intuitive that this should be the case, but it also corroborated in Pass-Shi.
-
-The math of gossip times is a classic problem of computer networks that predates blockchains. It is a bit gritty, but we can crudely say that as you increase $$\lambda$$ (witout changing the block delay), you create congestion that causes the gossip time to increase _superlinearly_. Since tens of thousands of fruit are about two orders of magnitude more data than what current networks can support, trying to use the above parameters will result in a big, extremely delayed mess.
-
-</details>
-
-So the real lesson here is that to gain the required confidence, we need to wait for $$18000$$ fruits. That's a lot of fruit.
+The Pass-Shi paper provides an analysis of this case as well, and gives the asymptotics of convergence time that also take into account the network's "fruit capacity", but we will not discuss this further, as one of our purposes is to avoid the need for so many shares in the first place.
 
 #### Why is honesty essential?
 
@@ -476,8 +486,4 @@ Well, if miners only point to their own fruit, then we might as well assume that
 Yes, by assuming miners don't pack other miners' fruits, we reduced FruitChains back to Bitcoin. And now selfish mining attacks _are_ possible again.
 
 Now, even outside this scenario, the mere possibility shows that there is plausibly something to be gained by dropping _some_ fruit and applying _some_ _sort_ of withholding strategy. This undermines the assumption that a majority of miners include all fruit, as it is not dictated by rationality. And indeed, there are quite large domains (in terms of hashrate distribution) where the honest strategy is demonstrably losing.
-
-
-
-
 
