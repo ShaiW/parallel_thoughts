@@ -1,3 +1,7 @@
+---
+description: 'Or: selfish mining for selfless people.'
+---
+
 # Fixing Bitcoin's Incentive Alignment
 
 This series was commissioned by [Quai network](https://qu.ai/) to promote and discuss one of their current efforts: the Proportional Reward Splitting (PRS) protocol.
