@@ -10,7 +10,7 @@ description: What are selfish mining, subshares, and PRS?
 >
 > This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund proof-of-work education.
 
-\[This post is **not complete**. If you conicidentally found your way here looking for information, **you are early**. I hope to finish it by the second weekend of August]
+**Warning**: This post is [**a draft**](./). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts).
 
 In this post, we present two solutions for selfish mining, the Fruitchain bla bla bla
 
