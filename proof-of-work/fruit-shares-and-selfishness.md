@@ -487,3 +487,7 @@ Yes, by assuming miners don't pack other miners' fruits, we reduced FruitChains 
 
 Now, even outside this scenario, the mere possibility shows that there is plausibly something to be gained by dropping _some_ fruit and applying _some_ _sort_ of withholding strategy. This undermines the assumption that a majority of miners include all fruit, as it is not dictated by rationality. And indeed, there are quite large domains (in terms of hashrate distribution) where the honest strategy is demonstrably losing.
 
+### Centralization Concerns
+
+## Split Rewards, not Hairs
+
