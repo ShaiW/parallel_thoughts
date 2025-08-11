@@ -4,7 +4,7 @@ description: How Eyal and Sirer ruined Bitcoin forever (but not really)
 
 # Part I: Bitcoin
 
-[In their paper](https://arxiv.org/abs/1311.0243), Eyal and Sirer present a strategy that increases the profit of a large miner by withholding blocks.
+As we will see, the rational strategy is still not good enough; among the rational strategies, there is a unique one that, if all miners follow, maximizes the performance of the protocol.[In their paper](https://arxiv.org/abs/1311.0243), Eyal and Sirer present a strategy that increases the profit of a large miner by withholding blocks.
 
 The idea is that by withholding the blocks they created, only releasing them at strategic times, a large miner can increase the orphan rates of the rest of the network more than its own orphan rates, causing their proportion of non-orphaned work to increase, whereby earning then a bigger cut of the reward than their contribution to mining.
 
@@ -16,7 +16,7 @@ The upshot of the attack, in concrete number form, is summarized in this figure 
 
 <figure><img src="../../.gitbook/assets/image (3).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
 
-$$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it the adversary releases it _exactly_ as she hears of a competing honest block.
+$$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it the adversary releases it _exactly_ as she hears of a competing honest block. In other words, it is the probability to _win ties_.
 
 We see that even if we assume zero connectivity, an attacker with more than 33% can profitably carry out the attack, while as little as 42% suffices to create a _majority_ of the blocks non-orphaned.&#x20;
 
@@ -102,17 +102,17 @@ Consequently, the techniques and general theorems proved within the backbone pro
 
 So why are we even doing this?
 
-Because the assumption of a perfectly connected adversary is unrealistic. A perfectly connected adversary has the following property: if they withhold a block $$B$$, only releasing it upon hearing about a a competing block $$C$$ releases block $$B$$, they are _guaranteed_ that the network will prefer $$B$$ over $$C$$.
+Because the assumption of a perfectly connected adversary is unrealistic. A perfectly connected adversary _always_ wins ties. She hears of _all_ blocks _extremely_ fast (no matter who created the block, she _always_ hears about it before more than half of the network), and can transmit blocks to almost _anyone._
 
 It's hard to imagine such an adversary in reality. Even for a very well-connected adversary, there must be some other miner sufficiently distant that, by the time the attacker learns of their blocks, most honest miners also have, giving the attacker's block a _zero_ chance to win.
 
-Furthermore, the ability to selfishly mine becomes quite limited quite fast as the connectivity parameter $$\gamma$$ becomes smaller. This is already apparent in the Eyal-Sirer graph above. However, we see that for low (even zero) values of $$\gamma$$, a sufficiently larger less-than-half adversary can still accrue disproportionate gains.
+Furthermore, the ability to selfishly mine becomes quite limited quite fast as $$\gamma$$ becomes smaller. This is already apparent in the Eyal-Sirer graph above. However, we see that for low (even zero) values of $$\gamma$$, a sufficiently large less-than-half adversary can still accrue disproportionate gains.
 
 Fixing _this_ is the problem that inspired the protocols we are about to discuss.
 
 ## Unselfishing Bitcoin?
 
-The aftermath of the discovery of selfish mining has led to various approaches for mitigating its effects. As usual, the Bitcoin community was averse to modifying the underlying protocol. Some suggested changes to peer-to-peer policies (such as block relaying and tie-breaking rules) that, while not prohibiting the attack, would make it harder to carry out. Others argued that selfish mining is not a significant concern, given the extreme measures required to carry it out profitably.
+The aftermath of the discovery of selfish mining led to various approaches for mitigating its effects. As usual, the Bitcoin community was averse to modifying the underlying protocol. Some suggested changes to peer-to-peer policies (such as block relaying and tie-breaking rules) that, while not prohibiting the attack, would make it harder to carry out. Others argued that selfish mining is not a significant concern, given the extreme measures required to carry it out profitably.
 
 On the theoretical front — where the motivation is not the preservation of Bitcoin, but understanding what probabilistic consensus can or cannot do — people work on developing protocols where this problem does not exist.
 
@@ -120,39 +120,43 @@ On the theoretical front — where the motivation is not the preservation of Bit
 
 We laid out our goal: to make reward shares more fair.
 
-However, we must recall that altering the reward distribution method can also affect properties we often take for granted. One crucial aspect is how long it takes the reward share to converge into a fair distribution. Say that you have $$\alpha$$ of the hashrate, and a particular protocol guarantees that on average, over time, you will gain $$\alpha$$ of the rewards. How long will it take? Is it possible that the variance is so substantial that it will take days, even weeks, before the probability of deviating significantly from the amount of reward you were expecting becomes negligibly small?
+However, we must recall that altering the reward distribution method can also affect properties we often take for granted. One crucial aspect is how long it takes the reward share to converge into a fair distribution. Say that a protocol assures that if we track the earnings of an $$\alpha<0.5$$ for long enough, they will approach a fraction of $$\alpha$$ of the total emissions. But how long is "long enough"? Even if the protocol assures that it eventually happens, it could be that as we require more exact approximations, the waiting times shoot through the roof, even if the precision we expect is completely within reason. For example, we will see soon an example where obtaining reasonable confidence that the error is less than $$1\%$$ can take _days_.
+
+Preserving chain quality is a qualitative statement that poses no requirements on the convergence rate (except that it can be computed from the precision and confidence we expect). In practice, this is not enough.
 
 This is not just about patience. Tracking reward distribution is crucial for the everyday operations of pools and exchanges. In a while, we will introduce _shares_, a way for a miner to prove to a pool that they have done part of the work. A pool typically pays out for the share in advance, based on an _estimation_ of the actual reward. An incorrect estimation can lead to a pool bleeding money. A protocol that forces pools to either take monetary risks or withhold payouts for days or weeks is impractical.
 
 ### The State of the Art
 
-A holy grail solution to selfish mining is a protocol where, assuming a majority of the miners are _rational_, no miner with a fraction $$\alpha$$ of the network can obtain, in the long term, more than a fraction of $$\alpha$$ of the rewards. Such a protocol necessarily works by delaying the distribution of rewards to collect enough data to make the distribution fair.&#x20;
+A holy grail solution to selfish mining is a protocol that assures rapidly converging chain quality even if we only assume that a majority of miners is _rational._
 
 We are not quite there yet.
 
-The first successful attempt at better aligning mining incentives is the [_FruitChains_](https://eprint.iacr.org/2016/916) protocol, introduced in 2016 by Pass and Shi. FruitChains manages to find a little weak, but still rather satisfying, compromise between rationality and honesty. The chain quality property holds, in the sense that an _honest_ miner will earn as much as they should _as long a majority of miners are honest_.
+The first successful attempt at aligning proof-of-work incentives is the [_FruitChains_](https://eprint.iacr.org/2016/916) protocol, introduced in 2016 by Pass and Shi. FruitChains manages to find a little weak, but still very satisfying, compromise between rationality and honesty. The chain quality property holds, in the sense that an _honest_ miner will earn as much as they should _as long a majority of miners are honest_.
 
 Wait what? Isn't this precisely what we _don't_ want to assume?
 
-Well, here is the thing: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either.
+Well, its subtle: in Bitcoin, a large miner can deviate and _immediately benefit_, even if all other miners are honest. In FruitChain, this is no longer the case. Deviation does not penalize you, but as long as no other miner deviates in the same way, it does not gain you anything either. This is a _highly non-trivial_ property.
 
-However, FruitChains has one drawback that makes it unusable: the time it takes to converge _increases_ with the security guarantees we want. Let us make it more precise: say we want the protocl to guarantee that if we count shares for $$k$$ blocks, there's a probability of $$2^{-\kappa}$$ that rewards not to deviate by more than $$\delta > 0$$, what should we set the number of shares per block $$\lambda$$ to be? (If these notations are unclear to you, hang tight, I introduce them in more detail in the next part).
+However, FruitChains has a drawback that makes it unusable: the time it takes to converge _increases_ with the security guarantees we want.&#x20;
+
+Let us make this statement a bit more quantifiable: say we want the protocol to guarantee that if we count shares for $$k$$ blocks, there's a probability of $$2^{-\kappa}$$ that rewards will not deviate by more than $$\delta > 0$$. What should we set the number of shares per block $$\lambda$$ to be? (If these notations are unclear to you, hang tight, I introduce them in more detail in the next part).
 
 In PRS, for whatever values of $$\kappa,\delta,k$$ you choose, there is a corresponding $$\lambda$$. **This is not true for FruitChains**. In fruitchains, it turns out that we can only find $$\lambda$$ when $$k$$ is large enough. Moreover, $$k$$ also grows with the fraction of maximal assumed attacker $$\alpha$$. Writing the actual dependence is complicated, but a necessary condition is that $$k\ge2\cdot({\kappa + \log(\kappa/\delta^2)})$$.
 
 This inequality is _very loose_, but even the rough estimate it provides establishes the point.
 
-Say that we want $$50$$ bits of security that that the distribution is fair up to an error of $$10\%$$. We get from the inequality above that this will require at least $$126$$ blocks, _regardless_ of how much shares per block we produce.
+Say that we want $$50$$ bits of security that the distribution is fair up to an error of $$10\%$$. We get from the inequality above that this will require at least $$126$$ blocks, _regardless_ of how much shares per block we produce.
 
-These are very lax assumptions. More realistic security expectations are $$\delta = 0.05$$ and $$\kappa=64$$. Here we find that $$k$$ must be at least $$160$$. And even here, $$\delta$$ is a bit low.
+These are very lax assumptions. More realistic security expectations are $$\delta = 0.05$$ and $$\kappa=64$$. Here we find that $$k$$ must be at least $$160$$. (And some would argue that $$\delta=0.05$$ is still too lax).
 
 Even with these rough estimates, we see that the convergence runs into days. More tight analyses show that it runs into weeks and months on very reasonable parameter choices.
 
-This remained the state-of-the-art for a while. Literature on selfish-mining-resistant protocols continued to be published, primarily focusing on no-go theorems that demonstrate the vulnerability of various natural approaches to modifying FruitChains. We will mention some of these in part two. A few algorithms, such as Bobtail and Prism, tried radically different approaches that weren't adopted due to drawbacks we will not get into.
+This remained the state-of-the-art for a while. Literature on selfish-mining-resistant protocols continued to be published, primarily focusing on no-go theorems that demonstrate the vulnerability of various natural approaches to modifying FruitChains. We will mention some of these in part two. A few protocols, such as Bobtail and Prism, tried radically different approaches that weren't adopted due to drawbacks we will not get into.
 
 As far as I know, the only new _recent_ approach (at least within the backbone framework) to emerge following FruitChains is [Proportional Reward Splitting](https://arxiv.org/abs/2503.10185) (PRS), authored by a collaboration of the Quai team and Dionysis Zindros (with whom I am already familiar as the coauthor of [NiPoPoWs](https://eprint.iacr.org/2017/963) and [Mining in Log-Space](https://eprint.iacr.org/2021/623), famously used in Kaspa's pruning protocol).
 
-The PRS protocol is heavily inspired by FruitChains. It is easily the most similar to FruitChains in terms of structure and assumptions. But PRS takes just enough liberties to stand on its own feet, and introduces two major improvements.
+The PRS protocol is heavily inspired by FruitChains. It is easily the most similar to FruitChains in terms of structure and assumptions. But PRS takes just enough liberties to stand on its own feet and introduces two major improvements.
 
 First, it manages to remove the honesty assumption, replacing it with rationality. Note that this is still not the holy grail. Even in PRS, a rational majority alone is not sufficient to ensure chain quality. Even if all miners are rational, this is not guaranteed. What _is_ guaranteed is that if all miners are rational and none deviates, then a single miner with less than half of the hash rate _gains nothing_ by deviating. The only way to earn from deviating is if there is a majority of deviators. But again, the deviation is not penalized either.
 
@@ -166,13 +170,13 @@ We can summarize this into the following table:
 
 <table><thead><tr><th> </th><th width="163">Bitcoin</th><th width="215.79998779296875">FruitChain</th><th>PRS</th></tr></thead><tbody><tr><td>Selfish mining threshold</td><td><span class="math">25\%</span> (<span class="math">\gamma=0</span>)<br>(<a href="https://arxiv.org/abs/1507.06183">Sapirshtein et al.</a>)</td><td><span class="math">50\%</span></td><td><span class="math">38\%-42\%</span></td></tr><tr><td>Model assumptions</td><td></td><td>Honest majority</td><td><strong>Rational</strong> majority</td></tr><tr><td>Required shares/block <span class="math">(\lambda)</span> required to obtain fairness <span class="math">\delta</span> with confidence <span class="math">2^{-\kappa}</span> within <span class="math">k</span> blocks</td><td></td><td><span class="math">\lambda = \Omega\left(\frac{\kappa}{k\delta^2}\right)</span></td><td><span class="math">\lambda = \Omega\left(\frac{\kappa}{k\delta^2}\right)</span></td></tr><tr><td>Lower bound on <span class="math">k</span></td><td></td><td><span class="math">k\ge 2\cdot\left(\kappa + \log_2\left(\frac{\kappa}{k\delta^2}\right)\right)</span></td><td><strong>None</strong></td></tr></tbody></table>
 
-These advances arguably place PRS as the best way yet to make a chain resistant to selfish mining, but  the Quai team is not satisfied. As we will see, the rational strategy is still not good enough, among the rational strategy there is a unique one that, if all miners follow, maximizes the performence of the protocol. The next goal is to modify the protocol such that all other rational strategies vanish. We will conclude the series with a discussion of this problem and current attempts at a solution.
+These advances arguably place PRS as the best way yet to make a chain resistant to selfish mining, but  the Quai team is not satisfied. As we will see, the rational strategy is still not the best we can do. Among the rational strategies, there is a unique one that, if all miners follow, maximizes the performance of the protocol. The next goal is to modify the protocol such that all other rational strategies vanish. We will conclude the series with a discussion of this problem and current attempts at a solution.
 
 ## Marco? Polo!
 
 Before describing FruitChains and PRS, it's worth considering a similar problem: designing a mining pool.
 
-When you think about it, mining pools have to solve a similar problem: how to divide the block reward to the pool users, such that each user is rewarded proportionally to their contribution.
+When you think about it, mining pools have to solve a similar problem: how to divide the block reward among the pool users, such that each user is rewarded proportionally to their contribution.
 
 The setting of mining pools is very different from selfish mining. Since the pool's decision does not affect consensus, the decision doesn't have to be inferable from the chain. Mining pools and users transmit _off-chain_ data in the decision-making process, and only post the final decision to the chain. This is a trade-off: on the one hand, we need this additional information to make a fair decision. On the other hand, this makes the decision process vulnerable to censorship, data manipulation, and other problems that blockchains solve. Reconciling the latter drawback requires sophisticated protocols such as  PPS+, PPLNS, FPPS, and others.
 
