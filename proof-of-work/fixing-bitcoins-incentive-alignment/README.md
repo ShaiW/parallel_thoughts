@@ -1,10 +1,6 @@
 # Fixing Bitcoin's Incentive Alignment
 
-> **Acknowledgement**
->
-> This post was funded by the , which generously provided me with a grant to fund proof-of-work education.
-
-The following series of posts was commissioned by [Quai network](https://qu.ai/) to promote and discuss one of their current efforts: the Proportional Reward Splitting (PRS) protocol.
+This series was commissioned by [Quai network](https://qu.ai/) to promote and discuss one of their current efforts: the Proportional Reward Splitting (PRS) protocol.
 
 The goal is to provide an accessible introduction to the problem and the approaches to solving it. Like all of my writing, it attempts to hold the sticks on both ends by appealing both to enthusiastic, curious amateurs and to seasoned researchers who want to start thinking about selfish mining and need a primer.
 
