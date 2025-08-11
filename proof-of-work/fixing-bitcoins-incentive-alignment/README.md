@@ -18,4 +18,8 @@ Finally, in the third part, we discuss the PRS algorithm itself. However, as of 
 
 Last point:  Throughout the post, more challenging aspects are posed as solved questions, hiding within expendable sections. These questions are meant to get your brain gears rotating, but also to clearly mark the more technical comments that might require a bit of formal background. **Skipping these questions entirely will not detract from the reading experience, and is recommended on a first read**.
 
+I hope you enjoy working through these posts as much as I enjoyed writing them!
+
+<p align="right">Shai Deshe</p>
+
 <figure><img src="../../.gitbook/assets/image (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>

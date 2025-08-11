@@ -11,5 +11,5 @@
 
 ## Drafts
 
-* [Drafts](drafts/drafts/README.md)
-  * [Fruit, Shares, and Selfishness](drafts/drafts/fruit-shares-and-selfishness.md)
+* [Drafts](drafts/drafts.md)
+  * [Fruit, Shares, and Selfishness](proof-of-work/fruit-shares-and-selfishness.md)

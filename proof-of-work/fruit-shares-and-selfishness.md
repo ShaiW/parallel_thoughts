@@ -18,7 +18,7 @@ In this post, we present two solutions for selfish mining, the Fruitchain bla bl
 
 Throughout the post, more challenging aspects are posed as answers with solutions. These questions are meant to get your brain gears rotating, but also to clearly mark the more technical comments that might require a bit of formal background. **Skipping these questions entirely will not detract the reading experience, and is recommended on a first read**.
 
-<figure><img src="../../.gitbook/assets/image (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>
 
 ## Selfish Mining Primer
 
@@ -45,7 +45,7 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../../.gitbook/assets/image (3).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
 
 $$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it releases at the exact same time the adversary hears of a competing honest block.
 
@@ -59,11 +59,11 @@ A common misconception is that because a 38% attacker can create a majority of t
 
 A successful double-spend attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 whereas a successful selfish mining attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks.
 
@@ -298,7 +298,7 @@ If we assume $$2 \log(T) + k \ll \log(N)$$, we get that the dependency between b
 
 Subblocks/share seem to be a handy tool indeed to probe the hash rate among miners. But applying it requires more work. For protocols that want to use them on-chain, we need to find a way to include them that will not degrade the security of the network and will not be vulnerable to the same selfish mining attacks that exist in Bitcoin.
 
-<div align="center"><figure><img src="../../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="center"><figure><img src="../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 
 
@@ -319,7 +319,7 @@ The idea of FruitChains is to define two types of blocks.
 
 So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include transactions. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
 
-<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
 
 Note that each fruit has exactly one harvest time and is packed into at most one basket. However, some of the fruit, even though a bit old, are not packed into any basket. This is a crucial part of the honest assumption: baskets are not **required** to pack any fruit, and are not even **incentivized** to do so. They are not **penalized** for packing fruit either, so it is not entirely outlandish to expect _honest_ miners to pack them, but it is far from ideal. We will dive into the dynamics of this process shortly.
 
@@ -337,7 +337,7 @@ Before we dive into the incentives, there is one more crucial aspect to introduc
 
 The freshness threshold tells us how fresh a fruit must be to be valid. After that point, it becomes _spoiled_, and surely any sensible person will agree that a fruit basket that packs spoiled fruit is invalid. Here is an illustration for a freshness threshold of three:
 
-<figure><img src="../../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
 
 With that, we understand all of the ingredients and rules that define the FruitChain protocol. So let us try to understand what it achieves.
 
