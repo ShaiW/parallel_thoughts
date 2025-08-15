@@ -149,7 +149,7 @@ The probability of creating a six-block-deep reorg with 28% of the hashrate appl
 
 It does not matter at all that Qubic most likely didn't manage to get 51%. Hyperfocusing on whether they have is a distraction. The elephant in the room is not what this means for Qubic, but what this means for Monero.
 
-Monero brands itself as a provider of military grade security, suited for sensitive, high-profile applications. They aspire to become part of the global economic infrastructure designed to provide reliability and robustness. Having been disrupted to such a thorough extent by an overall niche movement should considerably undermine their ability to do so.
+Monero brands itself as a provider of military grade security, suited for sensitive, high-profile applications. They aspire to become part of the global economic infrastructure designed to provide reliability and robustness. Having been disrupted to such a thorough extent by an overall niche movement should considerably undermine their ability to do so. They maybe didn't succeed this time, but they definitely showed that it is possible, and I believe that they can get there if they choose to persist (though I am not sure what that would accomplish).
 
 But what is the point of failure? To me, it is obvious, and I have been warning about this for years, so I find the vindication provided by Qubic pleasant. The answer is, of course, _ASIC resistance_.
 
