@@ -22,4 +22,4 @@ I hope you enjoy working through these posts as much as I enjoyed writing them!
 
 <p align="right">Shai Deshe</p>
 
-<figure><img src="../../.gitbook/assets/image (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1).png" alt="" width="330"><figcaption><p>A shellfish miner</p></figcaption></figure>

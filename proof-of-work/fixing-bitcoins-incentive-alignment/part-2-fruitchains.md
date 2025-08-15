@@ -6,5 +6,5 @@ description: How Pass and Shi fixed Bitcoin forever (but not really)).
 
 Coming soon
 
-<figure><img src="../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
 

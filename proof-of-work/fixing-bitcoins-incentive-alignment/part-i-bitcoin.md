@@ -14,7 +14,7 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../../.gitbook/assets/image (3).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
 
 $$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it the adversary releases it _exactly_ as she hears of a competing honest block. In other words, it is the probability to _win ties_.
 
@@ -28,11 +28,11 @@ A common misconception is that because a 38% attacker can create a majority of t
 
 A successful double-spend attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 whereas a successful selfish mining attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks.
 
@@ -290,4 +290,4 @@ If we assume $$2 \log(T) + k \ll \log(N)$$, we get that the dependency between b
 
 Subblocks/shares seem to be a handy tool indeed to probe the hash rate among miners. But applying it requires more work. For protocols that want to use them on-chain, we need to find a way to include them that will not degrade the security of the network and will not be vulnerable to the same selfish mining attacks that exist in Bitcoin.
 
-<div align="center"><figure><img src="../../.gitbook/assets/image (4).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="center"><figure><img src="../../.gitbook/assets/image (4) (1).png" alt="" width="375"><figcaption></figcaption></figure></div>
