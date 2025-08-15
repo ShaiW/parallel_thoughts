@@ -137,7 +137,7 @@ Given that Monero is _that much_ larger than Qubic, I would say that it is at le
 
 ## Verdict
 
-Given the data and analysis above, I can say with confidence that Qubic managed to obtain at least 28% of the current Monero hashrate, which is about XXX of the previous Monero hashrate. This is congruent with the 35% hashrate, as well as the perceived drop in average predicted hashrate due to increased orphan rates that follow from selfish mining.
+Given the data and analysis above, I can say with confidence that Qubic managed to obtain at least 28% of the current Monero hashrate. This is congruent with the 35% hashrate, as well as the perceived drop in average predicted hashrate due to increased orphan rates that follow from selfish mining.
 
 Of the hashrate used by Qubic for selfish mining, at least 5% came from new sources of hash and not migrating Monero miners.
 
