@@ -137,7 +137,7 @@ Given that Monero is _that much_ larger than Qubic, I would say that it is at le
 
 ## Verdict
 
-Given the data and analysis above, I can say with confidence that Qubic managed to obtain at least 28% of the current Monero hashrate. This is congruent with the 35% hashrate, as well as the perceived drop in average predicted hashrate due to increased orphan rates that follow from selfish mining.
+Given the data and analysis above, I can say with confidence that Qubic managed to obtain at least 28% of the current Monero hashrate. This is congruent with the 35% _perceived_ hashrate, as well as the known bounds for Eyal-Sirer.
 
 Of the hashrate used by Qubic for selfish mining, at least 5% came from new sources of hash and not migrating Monero miners.
 
@@ -162,3 +162,5 @@ As Dr. K pointed out in a Quai space that was primarily dedicated to Qubic's att
 Some may argue that Qubic's raid is unethical, but I beg to differ. The way I see it, crypto is in its formative stage, and we owe a debt of gratitude to anyone who stress tests claims. As long as Qubic did not abuse their dominance for a double-spend, as long as they give due notice about their raids, I see this as essential. I am not claiming they are being altruistic. I am claiming you should not expect _anyone_ to be. And if they managed to cheat the system (not _other users_ of the system, but _the system itself_), then the system is broken.
 
 Hate the game, not the player.
+
+[X thread for comments, discussion, and questions](https://x.com/DesheShai/status/1956400476888412257)
