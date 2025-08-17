@@ -223,9 +223,9 @@ Say that you have 100% of the mining power. Then you create a block on average o
 
 <summary>Question*: Can you quantify this?</summary>
 
-Consider you wait a period of $$k\cdot\lambda$$. The expected number of blocks in this time is $$k$$, and the variance turns out to be $$\sqrt{\lambda\cdot k}$$. This means that the probability that you created between $$k\cdot\lambda-\sqrt{k\cdot\lambda}$$ and $$k\cdot\lambda+\sqrt{k\cdot\lambda}$$ blocks **does not change with** $$k$$, let's call it $$p$$ (what we actually ded is to only allow a deviation of one standard deviation, which gives us $$p=0.68\%$$, you can get higher $$p$$ by using more standard deviations, but the analysis remains the same).
+Consider you wait a period of $$k\cdot\Delta$$. The expected number of blocks in this time is $$k$$, and the variance turns out to be $$\sqrt{\Delta\cdot k}$$. This means that the probability that you created between $$k\cdot\Delta-\sqrt{k\cdot\Delta}$$ and $$k\cdot\Delta+\sqrt{k\cdot\Delta}$$ blocks **does not change with** $$k$$, let's call it $$p$$ (what we actually ded is to only allow a deviation of one standard deviation, which gives us $$p=0.68\%$$, you can get higher $$p$$ by using more standard deviations, but the analysis remains the same).
 
-It follows that with probability $$p$$, the ratio between the number of blocks you expected and the number of blocks you created is between $$1-\frac{1}{\sqrt{k\cdot\lambda}}$$ and $$1+\frac{1}{\sqrt{k\cdot\lambda}}$$, which drops reasonably fast with $$k$$.
+It follows that with probability $$p$$, the ratio between the number of blocks you expected and the number of blocks you created is between $$1-\frac{1}{\sqrt{k\cdot\Delta}}$$ and $$1+\frac{1}{\sqrt{k\cdot\Delta}}$$, which drops reasonably fast with $$k$$.
 
 </details>
 
