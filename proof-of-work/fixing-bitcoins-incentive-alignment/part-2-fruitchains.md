@@ -27,7 +27,7 @@ The idea of FruitChains is to define two types of blocks.
 * A subset of the transactions in these fruits that does not contain any conflicts
 * A pointer to a single _predecessor_ basket
 
-So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include transactions directly, only from the fruits they pack. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
+So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include _new_ transactions, only the transactions they chose from the fruits they packed. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
 
 <figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
@@ -165,7 +165,7 @@ The first limitation, that we need a huge $$\lambda$$, mostly follows from the a
 The second disadvantage, that the required number of shares per block $$\lambda$$ is at least $$3k$$, is a bit more established. There is no formal argument that $$\lambda=\Omega(k)$$, but there's compelling evidence:
 
 1. We need this margin of error to ensure that most windows will have enough samples. This is a stronger requirement than just expecting that there are sufficiently many fruit on average.
-2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$. If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$\lambda=\Omega(k)$$.
+2. It is possible to show attacks that work for any $$\lambda$$  if  $$\lambda< ck$$, assuming that  $$c<0.1$$ (I'm intentionally not telling you why, look it up or try for yourselves). If this was true for all $$c$$ (not just small value of $$c$$), this would have proved that indeed $$\lambda=\Omega(k)$$.
 
 </details>
 
@@ -217,7 +217,7 @@ This comes to demonstrate not only how pooled mining is encouraged by protocol d
 
 A common criticism about Bitcoin is that it naturally incentivizes large mining pools due to how payment variance scales.
 
-Say that you have 100% of the mining power. Then you create a block on average once per ten minutes. Those who understand the [math of block creation](https://shai-deshe.gitbook.io/pow-book/supplementary-material/math/probability-theory/the-math-of-block-creation) know this means that your blocks are sampled from a _Poisson distribution_ with parameter $$\lambda = 10\text{ mins}$$. This means that after, say, an hour, they _should_ have mined about six blocks. It is still possible that they mined less or more than that, but as time passes, this variance _decreases_.&#x20;
+Say that you have 100% of the mining power. Then you create a block on average once per ten minutes. Those who understand the [math of block creation](https://shai-deshe.gitbook.io/pow-book/supplementary-material/math/probability-theory/the-math-of-block-creation) know this means that your blocks are sampled from a _Poisson distribution_ with parameter $$\tau = 10\text{ mins}$$. This means that after, say, an hour, they _should_ have mined about six blocks. It is still possible that they mined less or more than that, but as time passes, this variance _decreases_.&#x20;
 
 <details>
 
