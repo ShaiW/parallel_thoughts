@@ -14,15 +14,15 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer)</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer. The horizontal axis is the selfish miner hashrate fraction <span class="math">\alpha</span>, the vertical axis is the expected gain <span class="math">\alpha(1+\delta)</span>)</p></figcaption></figure>
 
-$$\gamma$$ measures _connectivity:_ the probability that an attacker block _wins_ (that is, not orphaned) if it the adversary releases it _exactly_ as she hears of a competing honest block. In other words, it is the probability to _win ties_.
+$$\gamma$$ is the _tie-winning probability_. Imagine that Alice withholds a block until she hears about a competing block from the honest network, and then she releases _her withheld block_. We let $$\gamma$$ be the probability that the network prefers Alice's withheld block over the honest block. It is a measure of how "well connected" Alice is.
 
 We see that even if we assume zero connectivity, an attacker with more than 33% can profitably carry out the attack, while as little as 42% suffices to create a _majority_ of the blocks non-orphaned.&#x20;
 
 With perfect connectivity, 33% is already enough to create a majority of the non-orphaned blocks, and _any_ perfectly connected attacker has something to gain from a selfish mining attack.
 
-The most realistic scenario is that the attacker's connectivity parameter is somewhere in between, say halfway. In this case we see that 25% are enough for a profitable attack, while 38% are enough to create a majority of non-orphaned blocks.
+The most realistic scenario is that the attacker's connectivity parameter is somewhere in between, say halfway. In this case, we see that 25% is enough for a profitable attack, while 38% is enough to create a majority of non-orphaned blocks.
 
 A common misconception is that because a 38% attacker can create a majority of the blocks, she can double-spend. It makes sense that by making more blocks than the honest network, you can create a competing chain, but that's _not what you do_ in selfish mining. The _total_ fraction of blocks remains the same, but you constantly headbutt with honest blocks to kick them off the chain. You can only do this by pointing at, or near, the heaviest tip, which is impossible if you spend your efforts on mining a side chain.&#x20;
 
@@ -34,7 +34,7 @@ whereas a successful selfish mining attack looks like this:
 
 <figure><img src="../../.gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
-Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks.
+Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks. That is, judging from the chain alone it seems like the red miner has a majority of the hashrate, but the orphans reveal that this is not quite the case. In this scenario, the attacker will receive a majority of the rewards despite not mining a majority of the block, which is exactly the crux of selfish mining attacks.
 
 ### Chain Quality (and Lack Thereof)
 
@@ -120,7 +120,9 @@ On the theoretical front — where the motivation is not the preservation of Bit
 
 We laid out our goal: to make reward shares more fair.
 
-However, we must recall that altering the reward distribution method can also affect properties we often take for granted. One crucial aspect is how long it takes the reward share to converge into a fair distribution. Say that a protocol assures that if we track the earnings of an $$\alpha<0.5$$ for long enough, they will approach a fraction of $$\alpha$$ of the total emissions. But how long is "long enough"? Even if the protocol assures that it eventually happens, it could be that as we require more exact approximations, the waiting times shoot through the roof, even if the precision we expect is completely within reason. For example, we will see soon an example where obtaining reasonable confidence that the error is less than $$1\%$$ can take _days_.
+However, we must recall that altering the reward distribution method can also affect properties we often take for granted. One crucial aspect is how long it takes the reward share to converge into a fair distribution. Say that a protocol assures that if we track the earnings of an $$\alpha<0.5$$ miner for long enough, they will approach a fraction of $$\alpha$$ of the total emissions. How long is "long enough"?
+
+Even if the protocol assures that it eventually happens, it could be that as we require more exact approximations, the waiting times shoot through the roof, even if the precision we expect is completely within reason. For example, we will see soon an example where obtaining reasonable confidence that the error is less than $$1\%$$ can take _days_.
 
 Preserving chain quality is a qualitative statement that poses no requirements on the convergence rate (except that it can be computed from the precision and confidence we expect). In practice, this is not enough.
 
@@ -238,6 +240,8 @@ Consider this idea: Before the search starts, the excavation manager flies over 
 
 Now, each member of the search excavation can collect these tokens as they encounter them, giving a rough approximation of how much ground they covered. When the treasure is finally recovered, each member will get a share proportional to the number of tokens they found. For example, if Alice, Bobette, and Charline found 3, 5, and 7 tokens, then Bobette will get a fraction of  $$5/(3+5+7)$$, or _one-third,_ of the treasure. Note that we only divide by the number of _found_ tokens.
 
+<div align="center"><figure><img src="../../.gitbook/assets/image (4) (1).png" alt="" width="375"><figcaption></figcaption></figure></div>
+
 To translate this intuition to blockchains, recall that [in proof-of-work](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works), attempting to solve the block means changing it a little bit (in particular, a field called the _nonce_, designated for that purpose) and _hashing_ it. The hashing operation will return, for each attempt, a _uniformly random_ number between $$0$$ and $$N-1$$ for some huge $$N$$ (typically, $$N=2^{256}$$). Solving the block means finding a nonce that hashes below some _difficulty target_ $$T$$.
 
 In our search excavation analogy, the members are miners, the ground they cover is the nonces they tried, and the treasure is a nonce that hashes to a number smaller than the difficulty target. But what are the plastic tokens?
@@ -289,5 +293,3 @@ If we assume $$2 \log(T) + k \ll \log(N)$$, we get that the dependency between b
 </details>
 
 Subblocks/shares seem to be a handy tool indeed to probe the hash rate among miners. But applying it requires more work. For protocols that want to use them on-chain, we need to find a way to include them that will not degrade the security of the network and will not be vulnerable to the same selfish mining attacks that exist in Bitcoin.
-
-<div align="center"><figure><img src="../../.gitbook/assets/image (4) (1).png" alt="" width="375"><figcaption></figcaption></figure></div>
