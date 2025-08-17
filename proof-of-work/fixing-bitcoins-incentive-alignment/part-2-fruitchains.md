@@ -27,7 +27,7 @@ The idea of FruitChains is to define two types of blocks.
 * A subset of the transactions in these fruits that does not contain any conflicts
 * A pointer to a single _predecessor_ basket
 
-So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include transactions. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
+So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include transactions directly, only from the fruits they pack. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
 
 <figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
@@ -154,7 +154,7 @@ $$
 
 But to get a concrete number, we need to know $$c$$ (or at least some upper bound). If our samples were taken from a simple Poisson process, then any basic probability proof will tell you that taking $$c$$ to be its standard deviation will work. However, we are analyzing a much more complicated protocols, where many dependencies lurk, biting into the degree of significance we can extract out of any statistical inference. For example, we need to account for the fact that a miner who only points to her own fruits reduces the probability of other fruits to _ever_ be included, by an amount that depends on many factors including $$R$$ itself. This coupling between the size and meaning of the sample is hard to disentangle, but Pass and Shi's meticulous analysis show that it does not change the _growth_ of the required sample size. In other words, it is entirely rolled into the constant $$c$$.
 
-A concrete value for $$c$$ is tricky, as it depends on unrolling the analysis, as well as network conditions. I asked ChatGPT5 to upper bound it for me, and she concluded that choosing $$c=100$$ is "very conservative", so for the rest of this section let us assume that $$c=10$$ is enough. (That being said, trusting an AI without verifying its answer yourself is _always_ a bad idea, so if you intend to implement FruitChains, start with finding a more reliable way to parameterize it.)
+A concrete value for $$c$$ is tricky, but for reasons we will not get into, it is natural to set $$c=3\ln 2 \approx 2$$.
 
 <details>
 
@@ -169,17 +169,19 @@ The second disadvantage, that the required number of shares per block $$\lambda$
 
 </details>
 
-With this assumption in mind, we obtain the bound $$k\ge\frac{10\kappa}{\delta^2 \lambda}$$. But since $$k$$ is measured in fruit, and we have (on average) $$\lambda$$ fruit per block, then if we use $$\Lambda$$ to denote the delay between consecutive _baskets,_ we get that the waiting time is
+With this assumption in mind, we obtain the bound $$k\ge\frac{2\kappa}{\delta^2 \lambda}$$. But since $$k$$ is measured in fruit, and we have (on average) $$\lambda$$ fruit per block, then if we use $$\Lambda$$ to denote the delay between consecutive _baskets,_ we get that the waiting time is
 
 $$
-T=\frac{\Lambda k}{\lambda}\ge \Lambda\frac{10\kappa}{\delta^2 \lambda^2}
+T=\frac{\Lambda k}{\lambda}\ge \Lambda\frac{2\kappa}{\delta^2 \lambda^2}
 $$
 
 So if we choose $$\lambda=1$$, and say we want 50 bits of confidence (which is actually a bit low) that there's no deviation of more than $$5\%$$ (which is actually a bit high). So we plug $$\kappa=50$$ and $$\delta=0.05$$ into the equation above to get that the waiting time will be **two hundred thousand** block delays. In Bitcoin, that comes up to about a four years. That is, you are more likely to wait longer for convergence than for the next halving!
 
 We can try to "cheat" from the other direction, and make $$\lambda$$ very large, so that convergence will be fast.
 
-We take more realistic assumptions of $$\kappa=64$$ and $$\delta=0.01$$. And say we want the protocol to converge after $$10$$ block delays. Then we set $$T=10\Lambda$$ in the equation and solve for $$\lambda$$ to get that we want about $$80000$$ fruit. Per block.
+We take more realistic assumptions of $$\kappa=64$$ and $$\delta=0.01$$. And say we want the protocol to converge after $$10$$ block delays. Then we set $$T=10\Lambda$$ in the equation and solve for $$\lambda$$ to get that we want about $$16000$$ fruit. Per block.
+
+Granted, our analysis is rather loose, but the attmpts of Pass and Shi and others to tighten it didn't bear much, err, fruit. They did not provide a precise number, but suggested that the order should be in the low thousands.
 
 That's an inordinate many fruits. If you try to create this many, you will find that the congestion becomes dominant, effectively increasing $$R$$, and taking $$k$$ along with it. In particular, when developing the inequality, we implicitly assumed that $$k$$ will turn out larger than $$R$$, otherwise the time it takes to gain sufficiently many samples increases, as the networks throughput becomes the dominant factor.
 
@@ -199,9 +201,9 @@ Now you don't know that other miners include your fruit. But why should you care
 
 Consider the extreme situation: miners who only point to their own fruits. Where does this put us?
 
-Well, if miners only point to their own fruit, then we might as well assume that the basket and the fruit can be treated as a single unit. A unit that contains both the fruit created since the previous basket and the basket itself. Providing both transaction data and weight. In other words, we get a block.
+Well, if miners only pack their own fruit, then we might as well assume that the basket and the fruit can be treated as a single unit. A unit that contains both the fruit created since the previous basket and the basket itself. Providing both transaction data and weight. In other words, we get a block.
 
-Yes, by assuming miners don't pack other miners' fruits, we reduced FruitChains back to Bitcoin. And now selfish mining attacks _are_ possible again.
+Yes, by assuming miners don't pack other miners' fruits, we reduced FruitChains back to Bitcoin. And now selfish mining attacks _are_ possible again, _even if_ all other miners are honest.
 
 Now, even outside this scenario, the mere possibility shows that there is plausibly something to be gained by dropping _some_ fruit and applying _some_ _sort_ of withholding strategy. This undermines the assumption that a majority of miners include all fruit, as it is not dictated by rationality. And indeed, there are quite large domains (in terms of hashrate distribution) where the honest strategy is demonstrably losing.
 
@@ -249,9 +251,9 @@ The probability that your fruit is _not_ packed in a _given_ basket is $$1-p_f$$
 
 The assumption of an honest majority is equivalent to requiring $$p_f > 1/2$$, which means that the probability a fruit is never included becomes smaller than $$1/2^R$$, which is arguably sufficiently low even for modest values of $$R$$.
 
-This is an effect that does not exist in Bitcoin: the way a miner chooses to construct her blocks affects the variance of other miners — incentivizing, perhaps, a mining pool that only packs the fruits created by its members.
+exceptThis is an effect that does not exist in Bitcoin: the way a miner chooses to construct her blocks affects the variance of other miners — incentivizing, perhaps, a mining pool that only packs the fruits created by its members. Or maybe allowing large miners to adopt "pay or wait" policies, where they censor all fruits except those mined by miners who pay them a fee.
 
-Our current understanding of this effect is quite shallow, but I hope I drove across the point that it is one of the aspects one _must_ consider when designing such a system.
+While these effects, as I described them, are already discussed in Pass and Shi's original paper, our current understanding thereof is quite shallow, but I hope I drove across the point that it is one of the aspects one must consider when designing such a system.
 
 <figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
 
