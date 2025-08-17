@@ -10,6 +10,8 @@ description: How Pass and Shi fixed Bitcoin forever (but not really).
 
 We are now positioned to understand the FruitChains protocol and how it attempts to combine the abstract idea of shares/subblocks/samples with decentralized consensus.
 
+I have previously described FruitChains as "the granddaddy" of on-chain incentive alignment, and I kindly request the reader to keep that in mind throughout the discussion. Since our ultimate goal is to understand PRS, we are naturally inclined to talk about the disadvantages of FruitChains. But I do not want this to be construed as criticism of the quality of the work. The FruitChains paper is a remarkable result that laid the conceptual foundation for many future works, including PRS.
+
 ## Pack My Fruit, Will Ya?
 
 The idea of FruitChains is to define two types of blocks.
