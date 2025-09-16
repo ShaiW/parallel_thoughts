@@ -4,9 +4,57 @@ description: How Eyal and Sirer ruined Bitcoin forever (but not really)
 
 # Part I: Bitcoin
 
-As we will see, the rational strategy is still not good enough; among the rational strategies, there is a unique one that, if all miners follow, maximizes the performance of the protocol.[In their paper](https://arxiv.org/abs/1311.0243), Eyal and Sirer present a strategy that increases the profit of a large miner by withholding blocks.
+> **Acknowledgement**
+>
+> This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund my proof-of-work education efforts.
+
+The Bitcoin protocol famously assumes that _honest_ miners follow two rules: always point at the tip of the selected chain, and never withhold blocks. We call this the _honest strategy_.
+
+How reasonable is it for miners to follow this rule in practice? For that, we consider a mixture of honest and _rational_ miners. Honest miners are those who follow the honest strategy. We only make two assumptions about rational miners: that they are seeking to _maximize profits from mining_, and that they are not colluding.
+
+<details>
+
+<summary>What makes this utility "rational"?</summary>
+
+From my experience, many people first find the rationality assumption reasonable: after all, what does a miner want if not to earn money from mining? After some thought, doubts start to creep in: why should a rational person care about the _source_ of revenue? Any miner would agree to stop mining if I pay them twice their expected revenue. Why isn't this reflected in what a "rational behavior" should be?
+
+My answer to that is that you shouldn't take the term "rational" too seriously. It is meant to designate the desire to maximize a given utility — in our case, the utility is mining revenue. Calling a miner irrational implies that they have _a different utility._ There are quite a few scenarios where this happens. It could be that the miner has some _externality_ they consider, such as wanting to harm one chain to help another, or an eccentric millionaire willing to pay them a hefty sum to disturb the network. Of course, it could simply be the case that the miner is a lunatic who wants to watch the world burn, but it is not the _only case_ where miners might be irrational.
+
+To obfuscate this point of confusion, many authors use the term "byzantine" instead of irrational to consider miners who behave arbitrarily, and we can make no assumptions about their utility (or even that there exists a utility that they are maximizing).
+
+For a more extended discussion, see the relevant section of [my book](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-2-the-block-chain-paradigm/honesty-and-rationality).
+
+</details>
+
+<details>
+
+<summary>Why can you assume miners do not collude?</summary>
+
+This assumption is just a technicality that simplifies things. Any strategy that a colluding $$\alpha$$ miner and $$\beta$$ miner might be employed can be simulated by a single $$\alpha+\beta$$ miner, so "clumping together" colluding miners into a single miner simplifies the discussion without sacrificing security.
+
+</details>
+
+It is not hard to convince oneself that a rational miner will always point to the tip of the heaviest chain they know: pointing to any other tip increases the probability your block will be orphaned, thus reducing your expected value. However, it is not so clear that rational miners will never choose to withhold a block. In fact, it is false.
+
+[In their paper](https://arxiv.org/abs/1311.0243), Eyal and Sirer present a strategy that increases the profit of a large miner by withholding blocks.
 
 The idea is that by withholding the blocks they created, only releasing them at strategic times, a large miner can increase the orphan rates of the rest of the network more than its own orphan rates, causing their proportion of non-orphaned work to increase, whereby earning then a bigger cut of the reward than their contribution to mining.
+
+<details>
+
+<summary>Why even talk about honest miners?</summary>
+
+Some readers might find the notion of honest miners superfluous. After all, if rational miners are not necessarily honest, why should any miner be honest?
+
+There are several reasons why honest miners are important.
+
+First, they are our baseline. The entire point of this series is to understand incentive _alignment_. The honest strategy tells us _how_ we want to align the incentives: such that rational miners employ the honest strategy.
+
+Second, they allow us to make stronger negative statements: the Eyal-Sirer proves that a sufficiently large rational miner can earn more than their share. But it actually prove something _much stronger_: that selfish mining works even assuming an _honest majority_. It is _not_ a consequence of most miners choosing rationality over honesty. Selfish mining is possible even if you have a majority of altruistic miners that follow the honest strategy to the letter out of the kindness of their hearts. That is a much stronger statement!
+
+Finally, they allow us to make reasonably weaker assumptions. Working in a fully rational setting can be very challenging, and sometimes even not well defined. Consequently, many results and analyses about Bitcoin rely on an honest majority assumption. In this sense, the proportional reward splitting mechanism is unique because it manages to remove this honest majority assumption.
+
+</details>
 
 ## Bitcoin and Selfishness
 

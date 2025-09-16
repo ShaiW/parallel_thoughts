@@ -6,7 +6,7 @@ description: How Pass and Shi fixed Bitcoin forever (but not really).
 
 > **Acknowledgement**
 >
-> This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund proof-of-work education.
+> This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund my proof-of-work education efforts.
 
 We are now positioned to understand the FruitChains protocol and how it attempts to combine the abstract idea of shares/subblocks/samples with decentralized consensus.
 

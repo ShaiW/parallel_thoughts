@@ -13,4 +13,4 @@
 ***
 
 * [Drafts](drafts/README.md)
-  * [Fruit, Shares, and Selfishness](drafts/fruit-shares-and-selfishness.md)
+  * [Part 3: Proportional Reward Splitting](drafts/part-3-proportional-reward-splitting.md)
