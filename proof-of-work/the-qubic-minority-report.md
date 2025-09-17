@@ -73,7 +73,7 @@ The script provided above also outputs this array.
 
 First, let us make a plot:
 
-<figure><img src="../.gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
 
 Here, the X axis represents the total number of blocks since the start of the inspected period. The blue graph indicates, at each point, what fraction of blocks observed so far (since the period started) are Qubic blocks. The red plot averages a symmetric window around each block, with a radius of 15 blocks, giving the ratio of Qubic blocks among 30 consecutive blocks, or about an hour.
 
@@ -113,7 +113,7 @@ Yes, this is the case when only looking at the block topology, but we have anoth
 
 Since difficulty adjustment relies on external information (in the form of clocks, used to prevent users from deliberately setting timestamps into the future to reduce difficulty, see [here](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works#difficulty-adjustment)), it provides us with a new keyhole to peep at miners from:
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 We can see that there is a very clear-cut point where the variance of the curve instantly changes its behaviour. Starting July 16th, the variance sharply increases inexplicably, which is apparent both in the increased rate and amplitude at which it thrashes from minima to maxima (which is sometimes called the "DAA frequency"), and in how jagged it is on a smaller scale.&#x20;
 
@@ -123,7 +123,7 @@ Qubic announced that "the takeover" will start on Aug 2nd, but from this graph a
 
 To get a better insight on what's going on, I sampled the difficulty on some random but evenly spaced points in two intervals: 20.6.25-15.7.25, and 15.7.25-10.8.25, and for each data set I computed the regression line to understand the trend. With an average of 25 blocks per sample (or about 40 semples/day), we get a very clear picture:&#x20;
 
-<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
 
 ever since selfish mining started, there has been a _constant_ _increase_ in perceived hashrate. While it's a bit hard to see in the picture, the increase is about 0.01 GH/s (or about 0.001%) per day, which amounts to nothing.
 

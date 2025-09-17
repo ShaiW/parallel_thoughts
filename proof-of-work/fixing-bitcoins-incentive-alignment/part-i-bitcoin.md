@@ -62,7 +62,7 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../../.gitbook/assets/image (3) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer. The horizontal axis is the selfish miner hashrate fraction <span class="math">\alpha</span>, the vertical axis is the expected gain <span class="math">\alpha(1+\delta)</span>)</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer. The horizontal axis is the selfish miner hashrate fraction <span class="math">\alpha</span>, the vertical axis is the expected gain <span class="math">\alpha(1+\delta)</span>)</p></figcaption></figure>
 
 $$\gamma$$ is the _tie-winning probability_. Imagine that Alice withholds a block until she hears about a competing block from the honest network, and then she releases _her withheld block_. We let $$\gamma$$ be the probability that the network prefers Alice's withheld block over the honest block. It is a measure of how "well connected" Alice is.
 
@@ -76,11 +76,11 @@ A common misconception is that because a 38% attacker can create a majority of t
 
 A successful double-spend attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 whereas a successful selfish mining attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 Note that in the latter example, the red blocks constitute the majority of _chain_ blocks, but the blue blocks are still the majority of _all_ blocks. That is, judging from the chain alone it seems like the red miner has a majority of the hashrate, but the orphans reveal that this is not quite the case. In this scenario, the attacker will receive a majority of the rewards despite not mining a majority of the block, which is exactly the crux of selfish mining attacks.
 

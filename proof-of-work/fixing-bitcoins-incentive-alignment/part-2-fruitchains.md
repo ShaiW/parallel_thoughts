@@ -29,7 +29,7 @@ The idea of FruitChains is to define two types of blocks.
 
 So the picture we get is like this: the baskets form a tree, just like in Bitcoin, but they do not include _new_ transactions, only the transactions they chose from the fruits they packed. Each fruit has its harvest point, and is possibly packed into a basket. So we get something like this:
 
-<figure><img src="../../.gitbook/assets/image (2) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 Note that each fruit has exactly one harvest time and is packed into at most one basket. However, some of the fruit, even though a bit old, are not packed into any basket. This is a crucial part of the honest assumption: baskets are not **required** to pack any fruit, and are not even **incentivized** to do so. They are not **penalized** for packing fruit either, so it is not entirely outlandish to expect _honest_ miners to pack them, but it is far from ideal. We will dive into the dynamics of this process shortly.
 
