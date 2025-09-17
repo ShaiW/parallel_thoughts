@@ -79,3 +79,8 @@ In many cases, this is not a particularly interesting experiment. But it turns o
 Indra's Pearls is the story of the journey to discover and classify these symmetries. It is reasonable to declare Friedrich Schottky's research during the 1870s as the starting point of this journey. Though it unavoidably calls back to relevant insights as early as ancient Greece. (Not surprisingly, Indra's Pearls has quite a lot to say about [Apollonian Circles](https://en.wikipedia.org/wiki/Apollonian_circles)!)
 
 I am not aware that Alan Watts himself was aware of the striking mathematical analogy between the powerful metaphor he found in the Aatamaska Sutra and the astute observations of great mathematicians of the 19th and early 20th centuries, such as Bernhard Riemman, Friedrich Schottky, or Felix Klein. I like to believe that he didn't, as this renders him a striking example of his own insight (which are in themselves reflections of an ancient Buddhist metaphor), casting their reflection on yet another pearl.
+
+## Not Art, Nature
+
+A recurring experience I had with this book was gleefully accosting anyone who would listen with the pretty pictures, to receive a mixed response. "The shapes are cool," they would say, "but the composition and color choices are crude and amateurish." My wife described the cover art as "ugly" and in a sense, it is:&#x20;
+
