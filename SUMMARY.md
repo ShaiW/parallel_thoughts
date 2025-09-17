@@ -12,8 +12,9 @@
 
 ## Books I Love
 
+* [Indra's Pearls](books-i-love/indras-pearls.md)
+
 ## Drafts
 
 * [Readme](drafts/readme/README.md)
   * [Part 3: Proportional Reward Splitting](drafts/readme/part-3-proportional-reward-splitting.md)
-* [Indra's Pearls](drafts/indras-pearls.md)

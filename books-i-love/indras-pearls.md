@@ -60,7 +60,7 @@ To better understand this eerie geometry, we can _tessellate it_. Just like we c
 
 <figure><img src="../.gitbook/assets/image (11).png" alt=""><figcaption><p>A square tessellation of the Poincare disc, created by <a href="https://www.researchgate.net/publication/353970526_Limitations_on_Realistic_Hyperbolic_Graph_Drawing">David Epstein</a></p></figcaption></figure>
 
-Amazingly enough, all of the above squares are _congruent_. Not only do they have the same area, but the exact same shape! This illuminates how the disk model distorts the actual hyperbolic geometry: shapes of equal sizes _appear_ smaller when they are furhter from the center!
+Amazingly enough, all of the above squares are _congruent_. Not only do they have the same area, but the exact same shape! This illuminates how the disk model distorts the actual hyperbolic geometry: shapes of equal size _appear_ smaller when they are farther from the center!
 
 A more interesting way to do so is to start with a _zero-degree triangle_, a triangle whose sides only meet on the boundary at infinity. The result is arguably much more aesthetic:
 
