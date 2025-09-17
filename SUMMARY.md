@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Parallel  Thoughts](README.md)
+* [Parallel  ThoughtsA](README.md)
 
 ## Proof-of-Work
 
@@ -10,7 +10,10 @@
   * [Page 3: Proportional Reward Splitting](proof-of-work/fixing-bitcoins-incentive-alignment/page-3-proportional-reward-splitting.md)
 * [The Qubic Minority Report](proof-of-work/the-qubic-minority-report.md)
 
-***
+## Books I Love
 
-* [Drafts](drafts/README.md)
-  * [Part 3: Proportional Reward Splitting](drafts/part-3-proportional-reward-splitting.md)
+## Drafts
+
+* [Readme](drafts/readme/README.md)
+  * [Part 3: Proportional Reward Splitting](drafts/readme/part-3-proportional-reward-splitting.md)
+* [Indra's Pearls](drafts/indras-pearls.md)

@@ -4,7 +4,7 @@ description: Split Rewards, not Hairs
 
 # Part 3: Proportional Reward Splitting
 
-**Warning**: This post is [**a draft**](./). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts). For the parts that were already published as non-drafts, see [here](../proof-of-work/fixing-bitcoins-incentive-alignment/).
+**Warning**: This post is [**a draft**](./). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts). For the parts that were already published as non-drafts, see [here](../../proof-of-work/fixing-bitcoins-incentive-alignment/).
 
 > **Acknowledgement**
 >
@@ -16,11 +16,11 @@ We are finally ready to present the protocol that motivated this entire series, 
 
 A recap of what we've seen so far, recast in the terms we learned along the way, will go a long way for properly framing PRS.
 
-[In the first post](../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer, and explained how it leads to a security property known as _fairness._ We roughly defined fairness as the assertion that, over a sufficiently long period of time, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
+[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer, and explained how it leads to a security property known as _fairness._ We roughly defined fairness as the assertion that, over a sufficiently long period of time, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
 
 We noted that the selfish mining attack by Eyal and Sirer demonstrates that Bitcoin lacks the fairness property, even assuming an honest majority of miners!
 
-This motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
+This motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
 
 Pass and Shi manage to properly align the incentives, but their protocol has a strong technical caveat: the regimes of parameters in which its security analysis holds are highly impractical. In other words, in any possible instantiation, the _rate_ at which the $$\alpha$$ miner's fraction of the rewards converges to something close to $$\alpha$$ is _much too slow_.
 
@@ -58,17 +58,17 @@ For this definition to make sense, we also have to assume that if $$B$$ points a
 
 Consider the following situation:
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 As a miner planning their next, you might find yourself in a dilemma:
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 Stress not, miner! We love _uncle blocks_ here. This means that you are allowed to enjoy both worlds!
 
 There is nothing preventing you from doing something like this:
 
-<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
 
 The block A is called an _uncle block_ of B. This terminology is surprisingly exact. For $$A$$ to be an uncle of $$B$$ we must have that $$A$$ and $$B$$ are on separate chain, but that $$A$$ is higher than $$B$$. Just like how your (first) uncle was born in your parents' generation!
 
