@@ -6,13 +6,15 @@ description: >-
 
 # Indra's Pearls
 
-_Indra's Pearls_ tells a story of profound mathematical insights, discovered through a computer-navigated exploration of an impossibly complex terrain.&#x20;
+<figure><img src="../.gitbook/assets/image (21).png" alt="" width="375"><figcaption></figcaption></figure>
+
+_Indra's Pearls_ tells a story of profound mathematical insights, discovered through a computer-navigated exploration of an impossibly complex terrain.
 
 This is not just a visual demonstration of the pretty symmetries afforded by math. It is a _detective story_ of piecing together a coherent picture by following breadcrumb trails guided by the intricacies revealed by computerized plotting, in an era when computation was an expensive and very limited resource.
 
 Most charmingly, the story is told from the perspective of some of the people who led that very research. This is not a retroactive historical reconstruction of what _might_ have transpired, but the direct accounts of those who were in the trenches of computational research in the 1980s. (The first author, David Mumford, is a 1974 Fields Medalist. He was the "responsible adult", while the other two authors were young, bright, upcoming researchers privileged with his tutelage.) This gives the book an air of authenticity that is impossible to recreate retroactively.
 
-Beyond its authenticity, Indra's Pearls provides a web of threads almost as interwined as the fractals it exhibits. This text freely hops between no less than _five_ accounts: The "prehistory" of the field and the classical results that served as the starting point for the authors' research. The mathematical insights and ideas that drove the development. Personal accounts of the writers' experiences conducting this research. A hands-on guide through the programmatic aspects, focusing on the computational challenges forced on the authors and the original solutions they came up with, explained in enough detail for the studious reader to replicate. And last but not least, a whole lot of pretty pictures that make this book coffee-table worthy.
+Beyond its authenticity, Indra's Pearls provides a web of threads that are almost as interwoven as the fractals it exhibits. This text freely hops between no less than _five_ accounts: The "prehistory" of the field and the classical results that served as the starting point for the authors' research. The mathematical insights and ideas that drove the development. Personal accounts of the writers' experiences conducting this research. A hands-on guide through the programmatic aspects, focusing on the computational challenges forced on the authors and the original solutions they came up with, explained in enough detail for the studious reader to replicate. And last but not least, a whole lot of pretty pictures that make this book coffee-table worthy.
 
 You'd expect that consistently hopping between approaches and topics might make the book feel a bit schizophrenic (strong flashbacks to Gödel, Escher Bach here), but it doesn't. It feels _seamless_. At times, as infuriatingly effortless as Mozart's music. The natural ability to cohesively glue such disparate aspects feels like it simply stems from _experience_. These are just the aspects that comprised the _actual research_. And yet, the authors' ability to recount their story in such a relatable way is nothing short of marvelous.
 
@@ -82,5 +84,40 @@ I am not aware that Alan Watts himself was aware of the striking mathematical an
 
 ## Not Art, Nature
 
-A recurring experience I had with this book was gleefully accosting anyone who would listen with the pretty pictures, to receive a mixed response. "The shapes are cool," they would say, "but the composition and color choices are crude and amateurish." My wife described the cover art as "ugly" and in a sense, it is:&#x20;
+A recurring experience I had with this book was gleefully accosting anyone who would listen with the pretty pictures, to receive a mixed response. "The shapes are cool," they would say, "but the composition and color choices are crude and amateurish." My wife described the cover art as "ugly," and in a sense, it is. The green color palette is pretty hideous. The color gradients are flat. Honestly, it gives 1990s Microsoft Office clip art kind of vibe.
 
+But that's not what I see when I look at this picture. What I see is layers of endless symmetry enticing me to trace them with my eyes. I see how every curvy line is the edge of a crystal ball, and on both sides of the ball are perfectly identical copies of the same picture (for the hyperbolic meaning of being identical). I see the infinite path of reflections that any element of this picture follows. I appreciate the challenge of finding, for any two triangles, the sequence of reflections that eventually maps one to the other.
+
+This is exhibited more bluntly in many other diagrams in the book, for example, figure 8.7 from the book.
+
+<figure><img src="../.gitbook/assets/image (23).png" alt=""><figcaption><p>Figure 8.7 from Indra's Pearls inexlicibly reminds me Mr Bungle's song <a href="https://www.youtube.com/watch?v=YLMVe2_a3xY">Dead Goon</a></p></figcaption></figure>
+
+When I look at the picture, I see how a fundamental domain of a quasi-Fuchsian group tessellates the interior of its limit set, but other people will first see neon bright colors composing what might pass as a particularly ugly circus-themed quilt.
+
+Of course, this gap could be bridged by explaining the symmetries hidden within, endowing the picture with a profound sense of meaning. But why should I have to? Surely, the beauty of this intricate geometry should be _self-evident_? I refused to believe that one must read a thick book to appreciate the aesthetics of these diagrams.
+
+At some point, it dawned on me that the analogy opening this review goes a long way. The authors are not artists, nor do they attempt to be. They are _cartographers_. Mapping the terra incognita of hyperbolic symmetries, and sending back the maps they drew. The maps were not _meant_ to be artistic. They were intended to be _informative_. All of the intricacies, the infinitely fine-grained complexity hidden between, are not an artist's impression, but an accurate snapshot of the wonders found in uncharted lands. Each and every render in this book is a direct consequence of running code that was not adjusted for aesthetics. The wonder lies in seeing the complexity of the geometry unravel from the simplicity of the code and the underlying mathematics.
+
+It is like crossing the ocean for the first time to find a world of exotic life and vegetation the likes of which we have never seen before. Most people will admire the tree itself instead of pontificating on how aesthetically the branches interwine and what color palette the leaves _should_ have. And it is _this_ sense of wonder that should guide the appreciation of these diagrams. Those are the intricacies of the nature of hyperbolic symmetry in their raw, natural form. And that this raw form packs so much beauty _even without_ an artist present to frame it most effectively, does not require any conscious _understanding_ of the structure to furnish blissful humility.
+
+## A Book of Many Virtues
+
+The deliberate hodge-podge of approaches that characterizes books written by the originators of their subject matter (especially those written for a wide audience) is a two-edged sword. But in this case, I think it could not have gone any better. Thanks to this diversity of styles, the book affords a diversity of applications.
+
+For casual reading, I would say that this book may sometimes be a bit terse (depending on the reader's mathematical maturity), but more often it is fluent and enjoyable. While it is hard for me to assume the perspective of a reader with no mathematical training, I believe many of the ideas pass on a qualitative level, and can be read off the pictures even if you don't care to learn what an automorphism subgroup is. The amount of value that can be extracted really depends on how studious the reader chooses to be. I believe that any reader stubborn enough could successfully tackle all the ideas in the book, but that people looking for a less intense experience should be prepared to skim or skip some of the more formal stuff.
+
+For a mathematically trained reader, especially with some familiarity with hyperbolic plane geometry, there is not a single thing about this book that is not immensely enjoyable. A semi-trained reader, who is comfortable with linear algebra and some geometric notions, but has never heard of Möbius transformations or the Riemann sphere, will have to do a bit more work. Still, I am certain they will find said work highly gratifying.
+
+For the codemonkeys, this book can be viewed as a lengthy, incremental, and satisfying coding challenge. The problems that arise when trying to draw fractals are often quite surprising, and the authors' algorithmic acumen is quite impressive. Even highly experienced programmers will learn new techniques and ideas they have probably never seen put into code before. The writers constantly try to goad the reader into implementing the code by proclaiming in _many_ instances that "to truly appreciate the forming picture" one should code it and see it animate. Fortunately, previous readers have already [done this for us](https://www.youtube.com/results?search_query=indras+pearls). But imagine running a script barely 100 lines long to obtain results like this:
+
+{% embed url="https://www.youtube.com/watch?v=AT0Z1pVWqmQ" %}
+
+Oh mama!
+
+Finally, can this be a textbook? On its own, not so much. However, I believe it could be used if supplemented by some more formal materials. (For example, the [beautiful booklet](https://www.amazon.com/Fuchsian-Groups-Chicago-Lectures-Mathematics/dp/0226425835) about Fuchsian groups by Svetlana Katok, which I'm sure the authors of Indra's Pearls would have recommended if it weren't published three years later). The book offers rich exercises on both the theoretical and practical sides, which can be used in home assignments. But I think its level of formality just falls short of being a standalone textbook for an advanced undergraduate course.
+
+## In Conclusion
+
+Reading Indra's Pearls made me feel _elated_. It helped me reconnect with the kind of ambitious excitement that drew me to math in the first place. The deliberately naive discourse over topics of infinite depth reminded me of how deeply emotional it once was to reach new levels of understanding in anything, particularly in math.
+
+I am sure anyone even slightly intrigued by these topics has something to learn from Indra's Pearls. Whether you are a curious reader looking for casual fun, a studious undergrad looking for a summer challenge, a seasoned mathematician looking for a peek into the mind of one of the greats, a historian tracing back the routes of fractals to centuries before Goa trance was invented, a programmer looking for a completely different challenge, an artist looking for new perspectives, or an interior designer trying to breath some new life into the old tradition of coffee book tables, or even none of the above, you _will_ find something in this book that you will cherish forever.
