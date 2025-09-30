@@ -10,15 +10,11 @@ description: Split Rewards, not Hairs
 >
 > This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund my proof-of-work education efforts.
 
-We are finally ready to present the protocol that motivated this entire series, the [_proportional reward splitting_](https://arxiv.org/abs/2503.10185) (PRS) mechanism.
+We are ready at last to present the protocol that motivated this entire series: [_Proportional Reward Splitting_](https://arxiv.org/abs/2503.10185) (PRS).
 
 ## Quick Recap
 
-A recap of what we've seen so far, recast in the terms we learned along the way, will go a long way for properly framing PRS.
-
-[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer, and explained how it leads to a security property known as _fairness._ We roughly defined fairness as the assertion that, over a sufficiently long period of time, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
-
-We noted that the selfish mining attack by Eyal and Sirer demonstrates that Bitcoin lacks the fairness property, even assuming an honest majority of miners!
+[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer. We recast this discovery as a (bounded) violation of a retrofitted security property called [_fairness_](https://shai-deshe.gitbook.io/parallel-thoughts/proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin#chain-quality-and-lack-thereof)_._ We roughly defined fairness as the assertion that, over a sufficiently long period of time, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
 
 This motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
 
@@ -30,15 +26,33 @@ A second property of FruitChains that we do not like is the necessity of the hon
 
 This is an example of a problem that PRS _doesn't solve_. In fact, it is the motivation for the currently ongoing further research, which we will touch on at the end of the post.
 
-## The PRS Protocol
+<details>
 
-The key difference between PRS and FC is in the name: _proportionality_. In FC, _each fruit has the same reward_. However, in PRS, each _block_ has a fixed reward, and it is _split_ proportionally with the number of shares. As an implication, PRS (unlike FC) does not place transactions in the workshares, but in the blocks themselves. This is because the transaction fees should also be split proportionally.
+<summary>We can use a more precise notation to measure the fairness violation</summary>
 
-This is a subtle yet profound difference: in FC, you know _exactly_ how much you get for each fruit by packing it. In PRS, each share has a _height_, and the reward for a block of a given height is split according to the number of shares of the same height that were included within a designated period of time.
+We say that the chain is $$(\alpha,\epsilon)$$-_fair_ if a $$(1-\alpha)$$ honest majority implies that the profit of any dishonest miner is at most $$\alpha(1+\epsilon)$$. For example, if an $$\alpha$$-miner has a strategy that increases her profit by 10%, then the chain is _not_ $$(\alpha,0.1)$$-fair.
 
-Recall that FC had a single parameter that a designer could tweak: the freshness parameter $$R$$. PRS provides _two_ tweakable knobs: First, the _workshare-eligibility window_ $$W$$ plays a role similar (though not identical) to $$R$$. Second, the _fork-eligibility window_ $$k$$, whose job is to ensure that the number of shares at a given height becomes fixed sufficiently fast.
+**Exercise**: Complete the statement correctly: $$(\alpha,\epsilon)$$-fairness implies $$(\alpha',\epsilon')$$-fairness whenever $$\alpha'\le\alpha$$ and \_\_\_\_\_
 
-Our first task is to explain these rules.
+A perfect chain is $$(1/2,0)$$-fair, which turns out to be good to be true.
+
+We can nicely fit selfish mining strategies such as Eyal-Sirer into this mold. Eyal and Sirer's analysis assumes an $$\alpha$$ miner with a probability of $$\gamma$$ to win a tie (which arguably proxies her connectivity). When making a security statement, we always assume that the adversary is the strongest possible in any respect not parametrized in that statement. Since we only want to consider the adversary fraction $$\alpha$$, we assume that $$\gamma=1$$, as this describes the most powerful $$\alpha$$ miner. Eyal and Sirer exactly compute the expected profit of an $$\alpha$$ miner deploying their strategy, from which the corresponding $$\epsilon_\alpha$$ can be recovered. The exact value of $$\epsilon_\alpha$$ is available in the paper, but it is a bit messy, so I will not reproduce it.
+
+Eyal-Sirer's results imply that Nakamoto Consensus is not $$(\alpha,\varepsilon_\alpha)$$-fair.
+
+This notation makes it easy to talk about arbitrary approximation. For example, while a perfect chain does not exist, FruitChains provides a recipe for constructing a $$(1/2-\delta,\epsilon)$$ chain for any $$\delta,\epsilon>0$$. The key is that $$\delta,\epsilon$$ must be chosen _in advance_, and then the recipe tells you ways to choose the fruit rates and freshness window length that will provide the requested security.
+
+</details>
+
+## The Risks of Proportionality
+
+The key difference between PRS and FC is in the name: _proportionality_. In FC, _each fruit has the same reward_. In PRS, we have a fixed reward for each _block_ (actually, as we'll shortly see, for each _level_), and it is distributed equally to shares that are anchored to this block. So the cut each miner gets is proportional to the fraction of shares they anchored.
+
+This is a subtle yet profound difference. The key issue is that it is much more sensitive to _delayed shares_. In FC, incoming packed fruits do not affect the value of already dispensed rewards. In PRS, any new workshare that points to a block $$B$$ _reduces_ $$B$$'s per share payout.
+
+If we are not careful, this could allow a new form of selfish mining. Say that the current tip of the network is the block $$B$$.
+
+The honest network will mine workshares over the blocks, and other blocks will include them. So one block later, the honest network might have this view (I'm still using fruit to designate workshares because I like fruit)
 
 ### Workshare-Eligibility
 
@@ -50,7 +64,7 @@ The purpose of workshare eligibility is to make sure that a block does not inclu
 
 <summary>Unique chain inclusion assumption</summary>
 
-For this definition to make sense, we also have to assume that if $$B$$ points at $$ws$$,  then no block below $$B$$ points at $$ws$$. Otherwise, we might consider $$B$$ invalid for pointing at a workshare that his grandparents already included. The paper does not make this assumption, and it is easy to generalize anything that we do to work without it, but it makes everything messier for no particular gain, so I am just going to make this assumption impliccitly
+For this definition to make sense, we also have to assume that if $$B$$ points at $$ws$$,  then no block below $$B$$ points at $$ws$$. Otherwise, we might consider $$B$$ invalid for pointing at a workshare that his grandparents already included. The paper does not make this assumption, and it is easy to generalize anything that we do to work without it, but it makes everything messier for no particular gain, so I am just going to make this assumption implicitly
 
 </details>
 
@@ -72,13 +86,13 @@ There is nothing preventing you from doing something like this:
 
 The block A is called an _uncle block_ of B. This terminology is surprisingly exact. For $$A$$ to be an uncle of $$B$$ we must have that $$A$$ and $$B$$ are on separate chain, but that $$A$$ is higher than $$B$$. Just like how your (first) uncle was born in your parents' generation!
 
-However, to truly accommodate uncles, we must make our definitions uncle-friendly.  (This is a good time to make sure you understand this point, and how things might have broken had we allowed uncle but stuck to the definition proposed above).
+However, to truly accommodate uncles, we must make our definitions uncle-friendly.
 
 ### Workshare-Eligibility Revisited
 
 Adapting the definition is straightforward. For every block $$B$$, let $$h(B)$$ be its distance from the genesis block (it's "generation"). The workshare-eligibility rule requires:
 
-> If $$B$$ points at $$ws$$, then it must be the case that $$h(B) \le h(ws.base) + W$$
+> A block $$B$$ is only allowed to point at the workshare $$ws$$ if it satisfies $$h(B) \le h(ws.base) + W$$
 
 This assures that blocks are allowed to point at workshares not based on their chain, as long as the height difference is within the parameter.
 
@@ -86,6 +100,6 @@ This means that workshares do not get lost even as a result of a reorg. As long 
 
 ### Fork-Eligibility
 
-Uncle blocks add, quite literally, a new dimension to our workshare supply. If we disregard uncles, then  all workshares are based on the same chain, which makes workshare-eligibility enough to seal the ability to add new shares to a sufficiently old block.
+Uncle blocks add, quite literally, a new dimension to our workshare supply. If we disregard uncles, then all workshares are based on the same chain, which makes workshare-eligibility enough to seal the ability to add new shares to a sufficiently old block.
 
 (sketch of dilution attack, explain the fork rule and how it resolves it)
