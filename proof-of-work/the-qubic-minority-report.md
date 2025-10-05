@@ -73,7 +73,7 @@ The script provided above also outputs this array.
 
 First, let us make a plot:
 
-<figure><img src="../.gitbook/assets/image (3) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 Here, the X axis represents the total number of blocks since the start of the inspected period. The blue graph indicates, at each point, what fraction of blocks observed so far (since the period started) are Qubic blocks. The red plot averages a symmetric window around each block, with a radius of 15 blocks, giving the ratio of Qubic blocks among 30 consecutive blocks, or about an hour.
 
@@ -97,7 +97,7 @@ To learn more about partical selfish mining and Eyal-Sirer, see [this section](h
 
 The Eyal-Sirer strategy is very well understood up to a single mysterious parameter: the tie-breaking probability $$\gamma$$. Selfish mining is all about withholding blocks, and releasing them if a competing block arises. In this scenario, what is the probability that the network prefers the withheld block? While the dependency on $$\gamma$$ is typically very strong, it is quite well behaved around the 35% line:
 
-<figure><img src="../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (5) (1).png" alt=""><figcaption></figcaption></figure>
 
 Based on this graph alone, and the length of the attack, we can say that it is highly unlikely that Qubic ever held less than 28% of the total hashrate, and probably had more than 30% (unless their minority of nodes is somehow _considerably_ more connected well connected, among itself and to the rest of the network, than the rest of the network).
 

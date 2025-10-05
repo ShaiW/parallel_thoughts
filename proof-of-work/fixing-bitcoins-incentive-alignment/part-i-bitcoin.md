@@ -62,7 +62,7 @@ For those who want the details of the Eyal-Sirer attack, as well as an overview 
 
 The upshot of the attack, in concrete number form, is summarized in this figure lifted from their paper:
 
-<figure><img src="../../.gitbook/assets/image (3) (1) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer. The horizontal axis is the selfish miner hashrate fraction <span class="math">\alpha</span>, the vertical axis is the expected gain <span class="math">\alpha(1+\delta)</span>)</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (3) (1) (1) (1).png" alt=""><figcaption><p>(Fig 2. from Eyal-Sirer. The horizontal axis is the selfish miner hashrate fraction <span class="math">\alpha</span>, the vertical axis is the expected gain <span class="math">\alpha(1+\delta)</span>)</p></figcaption></figure>
 
 $$\gamma$$ is the _tie-winning probability_. Imagine that Alice withholds a block until she hears about a competing block from the honest network, and then she releases _her withheld block_. We let $$\gamma$$ be the probability that the network prefers Alice's withheld block over the honest block. It is a measure of how "well connected" Alice is.
 
@@ -288,7 +288,7 @@ Consider this idea: Before the search starts, the excavation manager flies over 
 
 Now, each member of the search excavation can collect these tokens as they encounter them, giving a rough approximation of how much ground they covered. When the treasure is finally recovered, each member will get a share proportional to the number of tokens they found. For example, if Alice, Bobette, and Charline found 3, 5, and 7 tokens, then Bobette will get a fraction of  $$5/(3+5+7)$$, or _one-third,_ of the treasure. Note that we only divide by the number of _found_ tokens.
 
-<div align="center"><figure><img src="../../.gitbook/assets/image (4) (1).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="center"><figure><img src="../../.gitbook/assets/image (4) (1) (1).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 To translate this intuition to blockchains, recall that [in proof-of-work](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works), attempting to solve the block means changing it a little bit (in particular, a field called the _nonce_, designated for that purpose) and _hashing_ it. The hashing operation will return, for each attempt, a _uniformly random_ number between $$0$$ and $$N-1$$ for some huge $$N$$ (typically, $$N=2^{256}$$). Solving the block means finding a nonce that hashes below some _difficulty target_ $$T$$.
 

@@ -40,27 +40,27 @@ While this twisted version can deceive us as to what is considered a straight li
 
 The Poincaré disk model is very simple. First, draw a circle:
 
-<figure><img src="../.gitbook/assets/image (7).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (7) (1).png" alt=""><figcaption></figcaption></figure>
 
 The points of our geometry are those _inside_ the circle, but _not_ the points _along_ the circle. This is what we call an _open disc_. The lines along the circle are called its _boundary_, and they somewhat correspond to a "circle at infinity". (More accurately, all the boundary points represent a single "point at infinity". By pressing all of the boundary points into a single point, the disc becomes the Riemann Sphere.)
 
 Our next task is to understand what curves in our map correspond to straight lines in the actual hyperbolic geometry. Luckily, there's a recipe for that which requires _zero_ equations. Start with two points:
 
-<figure><img src="../.gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (8) (1).png" alt=""><figcaption></figcaption></figure>
 
 The recipe for the hyperbolic line that passes through these points is to draw a unique circle with two properties: it passes through both points, and it intersects the boundary circle at right angles. (A moment's reflection reveals why, for  any two points, there is _exactly one_ such circle.)
 
 The arc of the circle that resides inside the hyperbolic disk is the straight line we are looking for!
 
-<figure><img src="../.gitbook/assets/image (9).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (9) (1).png" alt=""><figcaption></figcaption></figure>
 
 Any curve drawn this way, regardless of the points we started with, is a hyperbolic line. Moreover, these are the _only_ hyperbolic lines. This correspondence furnishes a very nice visual characterization of hyperbolic lines. (With some reflection, we can convince ourselves that a hyperbolic line seems straight on our map if and only if it goes through the center of the disc.)
 
-<figure><img src="../.gitbook/assets/image (10).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (10) (1).png" alt=""><figcaption></figcaption></figure>
 
 Now that we know how to draw lines, we can draw polygons. And once we have polygons, we can use them to _tessellate_ the plane. This just means covering it up with identical shapes, like a chessboard. But when we try to do so, we find something weird: at each corner, _five_ squares meet. Perhaps a bit annoyed to find out that a hyperbolic chessboard can't be colored like a chessboard, we press on. The full tessellation will end up like this:
 
-<figure><img src="../.gitbook/assets/image (11).png" alt=""><figcaption><p>A square tessellation of the Poincare disc, created by <a href="https://www.researchgate.net/publication/353970526_Limitations_on_Realistic_Hyperbolic_Graph_Drawing">David Epstein</a></p></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (11) (1).png" alt=""><figcaption><p>A square tessellation of the Poincare disc, created by <a href="https://www.researchgate.net/publication/353970526_Limitations_on_Realistic_Hyperbolic_Graph_Drawing">David Epstein</a></p></figcaption></figure>
 
 Amazingly enough, all of the shapes above are _squares_. If you assumed a hyperbolic vantage, you'd see that _all_ edges in the drawing are _straight_ and of length _one-half_, and angles between edges that meet are always 72 degrees. This tesselation illuminates how the disk model distorts the actual hyperbolic geometry: shapes of equal size _appear_ smaller when they are farther from the center!
 

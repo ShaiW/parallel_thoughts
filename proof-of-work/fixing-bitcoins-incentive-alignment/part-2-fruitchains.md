@@ -61,7 +61,7 @@ Before we dive into the incentives, there is one more crucial aspect to introduc
 
 The freshness threshold $$R$$ tells us how fresh a fruit must be to be valid. After that point, it becomes _spoiled_, and surely any sensible person will agree that a fruit basket that packs spoiled fruit is invalid. Here is an illustration for a freshness threshold of three:
 
-<figure><img src="../../.gitbook/assets/image (5) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (5) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 With that, we understand all of the ingredients and rules that define the FruitChain protocol. So let us try to understand what it achieves.
 
@@ -257,5 +257,5 @@ exceptThis is an effect that does not exist in Bitcoin: the way a miner chooses 
 
 While these effects, as I described them, are already discussed in Pass and Shi's original paper, our current understanding thereof is quite shallow, but I hope I drove across the point that it is one of the aspects one must consider when designing such a system.
 
-<figure><img src="../../.gitbook/assets/image (6) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (6) (1) (1).png" alt=""><figcaption></figcaption></figure>
 

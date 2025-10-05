@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Parallel  ThoughtsA](README.md)
+* [Parallel  Thoughts](README.md)
 
 ## Proof-of-Work
 
