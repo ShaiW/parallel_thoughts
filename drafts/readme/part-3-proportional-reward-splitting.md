@@ -199,8 +199,22 @@ It is not _quite_ true that the network latency doesn't appear at all in the ana
 
 ### Trust Model
 
-\<Something about rational vs. honest>
+A unique feature of the PRS analysis, which does not hold for the FruitChain analysis or most protocol analyses, is the reduction of the honest assumption.
 
-### Incentive Alignment
+The security of FruitChain holds in a model where there is an honest majority. This is a reasonable assumption, but still a relatively strong one, which we would like to reduce. In a perfect system, the rational majority coincides with the honest majority.
 
-\<Something about still having degeneracies>
+Relying entirely on game-theoretic considerations is complicated, and most analyses, including FruitChains', show that if _enough_ of the network is honest, then it is _rational_ for the rest of the network to remain honest. The PRS analysis shows that rational behaviour is an equilibrium, even assuming no honest players. Some would call such a protocol "self-enforcing".
+
+### Incentive Alignment and Future Goals
+
+But PRS _does_ inherit one drawback from FC: the degeneracy.
+
+Recall that we had a problem with FruitChains: nothing incentivizes miners to point at other miners' fruit. It is true that honest behavior is an equilibrium, but it is _not_ unique. In fact, there is a parameter that we can freely change (determining the probability of including fruits created by someone else) without affecting the expected outcome in any way. This is called a _degeneracy_, and since this degeneracy begets strategies that are inoptimal for the protocol, it is a problem.
+
+A straightforward approach to a solution is to add weight to the workshares themselves, thereby putting workshare-omitting miners at a disadvantage. However, this should be done _very carefully_, as it undermines the decoupling we worked so hard to achieve between chain selection and reward distribution.
+
+The hope, at least as I see it, is for finding another "knob" that will allow us to incentivize inclusiveness at the expense of a _controlled_ trade-off of the benefits of the degenerate world. For example, we might find that an increase in share weight requires a _proportional_ increase in the required honest fraction. Such a knob will allow us to make decisions such as "increase the share weight as much as possible without raising the honesty requirement beyond 10%". Of course, this is just one possible scenario out of many.
+
+There is currently an interesting ongoing debate among the Quai developers and collaborators on these questions: What are the consequences of increasing share weight in terms of the honesty model and profitability thresholds? What is the correct way to choose share rates and weights? How do we juggle an array of properties — honesty requirements, incentive alignments, profitability threshold, expected profit, convergence time, and so on — which admit a great deal of subtlety within themselves and even more subtle interactions with each other? Is the share weight even the right parameter, or do we need a fancier knob?
+
+Finding a way to balance out all these requirements into a trade-off that provides sufficient guarantees to _all_ aspects is the art of protocol crafting. By watching or participating in the process of improving PRS, you can see this fascinating process unfold in real time.
