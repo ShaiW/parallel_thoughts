@@ -113,7 +113,7 @@ Yes, this is the case when only looking at the block topology, but we have anoth
 
 Since difficulty adjustment relies on external information (in the form of clocks, used to prevent users from deliberately setting timestamps into the future to reduce difficulty, see [here](https://shai-deshe.gitbook.io/pow-book/part-1-blockchains-and-blockdags/chapter-1-bft-vs.-pow/how-pow-works#difficulty-adjustment)), it provides us with a new keyhole to peep at miners from:
 
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 We can see that there is a very clear-cut point where the variance of the curve instantly changes its behaviour. Starting July 16th, the variance sharply increases inexplicably, which is apparent both in the increased rate and amplitude at which it thrashes from minima to maxima (which is sometimes called the "DAA frequency"), and in how jagged it is on a smaller scale.&#x20;
 

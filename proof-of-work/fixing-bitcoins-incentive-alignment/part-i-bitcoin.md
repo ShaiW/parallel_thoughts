@@ -76,7 +76,7 @@ A common misconception is that because a 38% attacker can create a majority of t
 
 A successful double-spend attack looks like this:
 
-<figure><img src="../../.gitbook/assets/image (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 whereas a successful selfish mining attack looks like this:
 

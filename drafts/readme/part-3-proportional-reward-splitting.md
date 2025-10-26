@@ -12,23 +12,27 @@ description: Split Rewards, not Hairs
 >
 > This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund my proof-of-work education efforts.
 
-We are ready at last to present the protocol that motivated this entire series: [_Proportional Reward Splitting_](https://arxiv.org/abs/2503.10185) (PRS).
+We have dedicated two lengthy posts to exploring incentive alignment in blockchains. We first reviewed the phenomenon of selfish mining on Bitcoin and how it suggests the definitions of chain quality and fairness. We proceeded to examine the FruitChains protocol, and discuss at length its benefits and drawbacks, culminating in the unfortunate realization that — while solving all problems asymptotically — it can not be reasonably parameterized.
 
-The key difference between PRS and FC is in the name: _proportionality_. In FC, _each fruit has the same reward_. In PRS, we have a fixed reward for each height, and it is distributed equally to shares harvested at this height. This is a subtle yet profound difference.
+Now, we are finally in a position to present the protocol that motivated this entire series: [_Proportional Reward Splitting_](https://arxiv.org/abs/2503.10185) (PRS).
+
+The key difference between PRS and FC is in the name: _proportionality_. In FC, _each fruit has the same reward_. In PRS, each share has a well-defined _height_. The amount of reward emitted at each _height_ is fixed and is distributed _equally_ among _all shares_ of that height. This is a subtle yet profound difference. (Note that FruitChains also classifies blocks by height, but only for tracking freshness. Height does not affect the reward distribution.)
+
+This is a subtle yet profound difference. In part because a new share retroactively affects the rewards gained by preexisting shares of the same height, making liveness trickier.
 
 ## Quick Recap
 
-[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer. We recast this discovery as a (bounded) violation of a retrofitted security property called [_fairness_](https://shai-deshe.gitbook.io/parallel-thoughts/proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains#fairness)_._ We roughly defined fairness as the assertion that, over a sufficiently long period of time, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
+[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer. We recast this discovery as a (bounded) violation of a retrofitted security property called [_fairness_](https://shai-deshe.gitbook.io/parallel-thoughts/proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains#fairness)_._ Roughly, we defined $$\alpha$$-fairness as the assertion that as we consider increasingly long time frames, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
 
-This motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
+By furnishing a profitable selfish mining strategy, Eyal and Sirer demonstrated that Bitcoin is not $$\alpha$$ fair for a wide range of $$\alpha$$ values (the exact range depends on the underlying network conditions, but even at optimal conditions, their strategy shows that $$\alpha$$-fairness is impossible for any $$\alpha>1/3$$).
 
-Pass and Shi manage to align the incentives properly, but their protocol has a strong technical caveat: the regimes of parameters in which its security analysis holds are highly impractical. In other words, in any possible instantiation, the _rate_ at which the $$\alpha$$ miner's fraction of the rewards converges to something close to $$\alpha$$ is _much too slow_.
+Selfish mining motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
 
-This is an example of a problem that PRS _solves_.
+### Incentive Alignment
 
-A second property of FruitChains that we do not like is the necessity of the honest assumption. FC improves upon Bitcoin in that the honest strategy is rational, but it is not the _only_ rational strategy. In particular, the "only pack your own fruit" strategy is perfectly rational, but if a majority of miners follow it, FruitChain will revert to Bitcoin.
+FruitChains achieves perfect incentive alignment, but with a significant technical caveat: it only works in highly impractical parameter regimes. In other words, the time it takes the $$\alpha$$-miner's reward proportion to converge to a value close to $$\alpha$$ is _very long_, while the required rate of fruit production is _unreasonably high_. It is _not known_ whether FruitChains remains secure in reasonable parameter regimes. However, the security analysis strongly relies on assuming these regimes, and most would agree that analysing FruitChains in any other regime will require a brand new approach.
 
-This is an example of a problem that PRS _doesn't solve_. In fact, it is the motivation for the currently ongoing further research, which we will touch on at the end of the post.
+PRS solves this problem by providing a new trade-off: it allows exchanging the quality of incentive alignment for efficiency. This allows architects to choose a _sweetspot_ where the incentive alignment is sufficiently strong (for example, the practical parametrization discussed in the paper guarantees $$\alpha$$-fairness for any $$\alpha<0.42$$), yet the protocol is quick and lean enough for everyday applications.
 
 <details>
 
@@ -48,17 +52,27 @@ This notation makes it easy to talk about arbitrary approximation. For example, 
 
 </details>
 
+### Rational Equilibrium
+
+A second property of FruitChains that is less than ideal is the necessity of an honest majority. The feat FruitChain achieves is that if at least half of the network is _honest_, then it is rational to follow the honest strategy.
+
+This is a great improvement over Bitcoin, where a sufficiently large (yet still much smaller than $$\alpha=1/2$$) rational miner will choose to selfish mine even if _all_ remaining miners are honest. However, we would ideally want to remove the honesty assumption altogether, and only assume that a majority of miners is _rational_ (which is the minimal possible requirement, as a blockchain with a Byzantine majority cannot stand). And that's exactly what the PRS paper shows.
+
+### Equilibria Degeneracy
+
+The third issue we recognized in FruitChains is that the equilibrium is _degenerate_. Note the careful phrasing in the previous subsection: "it is rational to follow the honest strategy." Why not "rational miners will follow the honest strategy"? Ah, because as we noted, that's not the _only_ rational strategy.
+
+The problem is that there are decisions that miners can make that, on the one hand, affect the convergence, but on the other hand, do not affect the miner's expected profit. More concretely, FruitChains define the honest strategy as "packing all fruit you can", but what prevents a miner from only packing their own fruit? It's easier, and it doesn't lose any reward. Furthermore, if all miners choose this strategy, the benefits of FruitChains fade away.
+
+Mathematically, we say that the honest strategy is a _degenerate equilibrium_. It is only a point in an entire section of equally profitable strategies. And it turns out that "baveling" the equilibrium to become unique is quite tricky.
+
+This is a problem that PRS _doesn't solve_. And solving it is the motivation for the currently ongoing further research, which we will touch on at the end of the post.
+
 ## Block Anchoring
 
-Recall the very straightforward way FC handles orphaned blocks: _it doesn't care_. Each fruit stores the _height_ at which it was harvested, and a fruit created at height $$h$$ can be packed by any block created at a height $$h'$$ such that $$0<h'-h<R$$  where $$R$$ is the freshness window.
+FruitChain deals with orphaned blocks in a very straightforward way: _it doesn't care_. Each fruit of a given height can be repacked by any (sufficiently old) block. A fruit harvested at height $$h$$ can be packed by any basket with height $$h'$$, as long as $$0<h'-h<R$$ where $$R$$ is the freshness window length.
 
-In PRS, things work a little differently. Each workshare references a _specific block_. What do we do with this reference? Assume for now that only workshares harvested on the selected chain count. So for example, in this case (I'm still using fruits to represent workshares because I like fruits):
-
-<figure><img src="../../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
-
-workshare A will count, but workshare B will not.
-
-In a moment, we will see why this is _not_ the correct way to determine workshare validity. But for now, notice that it makes a lot of sense. The key benefit is that, since only the main chain determines what workshares count, the only way to change the reward splitting for a level retroactively is via a reorg. This property has at least two benefits: it increases stability and simplifies and localizes the computation of the reward distribution. Another benefit, which is outside of our current scope, is that computing rewards this way is compatible with the PoEM rule for choosing the main chain.
+In PRS, things work a little differently. Each workshare points to a _specific block_ called its _anchor_. How can we use this information to design a robust reward distribution mechanism?
 
 <details>
 
@@ -70,31 +84,43 @@ I will reward 100 Quai to whoever produces the first argument that could convinc
 
 </details>
 
+As a warm-up, first assume that shares anchored outside the main chain do not count. So, for example, in this case (I'm still using fruits and baskets to represent workshares and blocks because I like fruit):
+
+<figure><img src="../../.gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+
+workshare A will count, but workshare B will not. This is a _bad_ assumption, which we will soon remove, but it is instructive for kicking off the discussion.
+
+While this is ultimately not the correct way to determine workshare validity, it does make a lot of sense. The key benefit is that only the main chain determines what workshares count, so the only way to change how the reward for a particular height is split retroactively is via a reorg. This increases stability and, while making the computation of reward distribution simpler and more localized. (Another benefit, well outside our current scope, is that computing rewards this way is compatible with the PoEM chain selection rule.)
+
 So what is the problem with only looking at the main chain? Perhaps this picture will give you a hint:
 
 <figure><img src="../../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
 
 ### 2 Selfish 2 Mining
 
-It turns out that using this policy above reintroduces selfish mining. That shouldn't come as a great surprise: FruitChains solved selfish mining by decoupling block creation from fruit inclusion, only allowing workshares on the selected chain _couples them back!_
+It turns out that ignoring orphaned workshares makes selfish mining possible again!
 
-An adversary can follow any selfish-mining attack on Bitcoin (e.g., Eyal-Sirer), while also packing all workshares to their own blocks. If they manage to orphan an honest block, they get an **unfair advantage** because the blocks they introduced instead **only anchor their own workshares**. It is true that honest miners can retroactively add more shares to the adversary block, but why would they? They'd rather harvest on more recent blocks that have fewer workshares already anchored to them. So even in this scenario, only harvesting to newer blocks, leaving the adversary with their advantage, is not only honest but _rational_.
+With some reflection, this shouldn't be such a great surprise. FruitChain works because it _decouples_ block creation from reward distribution. But ignoring shares outside the selected chain couples them right back! Not only is selfish mining possible again, but the very same attacks on Bitcoin can be used here!
+
+An adversary can follow any selfish-mining attack on Bitcoin (e.g., Eyal-Sirer), while also packing all workshares to their own blocks. If they manage to orphan an honest block, they get an **unfair advantage** because the blocks they introduced instead **only anchor their own workshares**. It is true that other miners can retroactively add more shares to the adversary block, but why would they? They'd rather harvest on more recent blocks that have fewer workshares already anchored to them. So even in this scenario, only harvesting to newer blocks, leaving the adversary with their advantage, is not only honest but _rational_.
 
 ### Hahaha, You Said "Knob"
 
 So how can we use block anchoring in a more subtle way?
 
-Simple, we _allow repacking from uncle blocks_, as long as the repacking is on the _main chain._ Consider this scenario:
+Simple, we _allow repacking shares anchored in uncle blocks_, as long as we are repacking on the _main chain._ In other words: we are still only counting workshares _packed_ on the main chain, but we allow these workshares to be anchored on uncle blocks.
+
+Consider this scenario:
 
 <figure><img src="../../.gitbook/assets/image (10).png" alt=""><figcaption></figcaption></figure>
 
-The block $$C$$ packs the workshare $$B$$, but that doesn't matter, since $$C$$ is not on the main chain. _However_, $$D$$ _also_ packs $$B$$, so it _is_ counted.
+The block $$C$$ packs the workshare $$B$$, but that doesn't matter, since $$C$$ is not on the main chain. _However_, $$D$$ _also_ packs $$B$$. Hence $$B$$ is counted despite being anchored on an uncle block.
 
-Astute readers might scratch their heads and wonder: Doesn't this completely undermine the purpose of harvest blocks? How is this any better than just using height?
+Astute readers might scratch their heads and wonder: Doesn't this completely undermine the purpose of anchor blocks? How is this any better than just using height? And those astute readers are completely right! The key is that we are not allowing _all_ uncles, but only uncles _close enough to the main chain_.
 
-The answer is that it gives is an _extra knob_. Another parameter to tweak. That parameter is the _allowed uncle distance_.
+_This_ is the _extra knob_ we alluded to earlier: the _allowed uncle distance_. Lets take the time to formalize this a bit.
 
-In a blocktree, the "uncle distance" for each block is its distance from the selected _chain_. For example, I wrote the uncle distance for all blocks in the following tree, assuming the longest chain selection rule:
+In a blocktree, the "uncle distance" for each block is its distance from the selected _chain_. As an exercise, I urge you to examine the blocktree below and make sure you understand why the numbers below correctly reflect the uncle distance of each block, assuming the longest chain rule. (You can challenge yourself further by computing the uncle distance assuming the GHOST chain selection rule.)
 
 <figure><img src="../../.gitbook/assets/image (11).png" alt=""><figcaption></figcaption></figure>
 
@@ -106,24 +132,32 @@ In a blocktree, the "uncle distance" for each block is its distance from the sel
 
 </details>
 
-We can also give a _relative_ definition. Given blocks $$A$$ and $$B$$, the _uncle distance_ from $$B$$ to $$A$$ is the distance of $$A$$ from the selected chain of $$B$$. So what we first called the _uncle distance_ of $$A$$ can also be called the uncle distance from _the selected tip_ to $$A$$. This is compatible with the fact that every block is created as if it _is_ the selected tip.
+This definition allows us to finally define our second knob $$K$$ to be the _maximum allowed uncle distance_.&#x20;
 
-Moving forward, the key is to limit the allowed uncle depth, which we will denote by $$K$$. Why is this useful? We will see very soon.
+### Relative Uncle Distance
+
+It will be convenient to provide a _relative_ definition. That is, given blocks $$A$$ and $$B$$, determine "how far an uncle" $$A$$ is to $$B$$. The _uncle distance_ from $$A$$ to $$B$$ is defined to be the distance from $$A$$ to the selected chain of $$B$$. (Note that this is not a symmetric notion. The distance from $$A$$ to $$B$$ can be very different than the distance from $$B$$ to $$A$$, which is why we say "from $$A$$ to $$B$$" instead of "between $$A$$ and $$B$$". This can be fixed by choosing a bit more precise definition, but we don't require this precision.)&#x20;
+
+As an example, consider the following blocktree:
+
+<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+The uncle distance from the red block to the blue block is $$1$$. (The uncle distance from the blue block to the red block is $$3$$.)
+
+To recover the previous (non-relative) definition of uncle distance, we note that the uncle distance of $$A$$ is simply the uncle distance from $$A$$ to the selected tip.
 
 ### Putting Everything Together
 
-The conclusion to all of this is that PRS has two knobs. The workshare-eligibility $$W$$ and the uncle depth $$K$$. Together they form a nice eligibility policy.&#x20;
+So the upshot is that we defined two knobs. The workshare eligibility depth $$W$$ (previously known as freshness window), and the allowed uncled distance $$K$$. The share eligibility policy implied by these two quantities is how PRS is defined. Let's make it explicit:
 
-**Definition**: A workshare $$ws$$ harvested at block $$A$$ of height $$h$$ is _eligible_ for block $$B$$ of height $$h'$$ if the following two conditions hold:
+**Definition**: A workshare $$ws$$ is _eligible_ for block $$B$$ if the following conditions hold:
 
-1. $$0<h'-h\le W$$
+1. $$0<h'-h\le W$$, where $$h$$ is the height of $$ws$$'s anchor and $$h'$$ is the height of $$B$$.
 2. The uncle distance from $$A$$ to $$B$$ is at most $$K$$.
 
-Typically, we set $$K$$ much smaller than $$W$$. $$K$$ should represent a depth beneath which forks are sufficiently unlikely. For example, taking a cue from Bitcoin, we can set $$K=6$$. The freshness parameter $$W$$, on the other hand, should be larger, to allow the shares time to converge.
+So how should we set $$W$$ and $$K$$? We will get quantitative about it in the next section. Qualitatively, we want to set $$K$$ to be much smaller than $$W$$. $$K$$ should represent a depth beneath which forks are sufficiently unlikely. For example, we can take a cue from Bitcoin and set $$K=6$$. On the other hand, $$W$$ should be large enough to ensure shares are unlikely to be excluded (at least assuming enough honest miners).
 
 Setting $$K$$ positive to allow "salvaging" workshares lost to shallow forks removes the selfish mining attack introduced by block-harvesting. Making it much smaller than $$W$$ (which needs to be much larger for other reasons anyway) retains the benefits of block-harvesting, at least approximately.
-
-(add some examples)
 
 And _this_ is how packing is allowed in PRS.
 
@@ -153,7 +187,7 @@ Let us summarize this in a table (which you are encouraged to compare with the [
 
 ### Honest miners
 
-We define honest behaviour as follows:
+We define honest behavior as follows:
 
 * Mine fruits and baskets **simultaneously**
 * The fruits and baskets are valid
@@ -165,33 +199,61 @@ We define honest behaviour as follows:
 
 ## PRStimating
 
-So how does PRS perform? How does it improve upon FruitChains?
+After working so hard to define PRS, we conclude by reviewing the results of the analysis in the PRS paper, and how they compare to FruitChain.
 
-### Fairness
+### Fairness and Convergence;
 
-The first thing we should ask ourselves is _how fair is it_. We consider the fairness averaged over $$T$$ consecutive heights. Say that an $$\alpha$$ miner earned a fraction $$\rho$$ of the rewards within the window, then we would like to bound $$|\rho-\alpha|$$ in terms of the window length $$T$$, the protocol parameters, and perhaps also the network latency.
+Since it was fairness we were after, it makes sense to first ask how fair PRS is. For that, let us consider the fairness averaged over $$T$$ consecutive levels. Say that an $$\alpha$$ miner earned a fraction $$\rho$$ of the rewards within the window, then we would like to bound $$|\rho-\alpha|$$ in terms of the window length $$T$$, the protocol parameters, and perhaps also the network latency.&#x20;
 
-The weakest form of fairness is the statement that $$|\rho-\alpha|$$ _eventually_ goes to zero. But that's not enough for us, because we want to have guarantees on _how fast_ it goes to zero.
+<details>
 
-What is the _strongest_ possible fairness?
+<summary>But isn't <span class="math">|\rho-\alpha|</span> ill defined?</summary>
 
-Since mining is an independent process, we can rely on something called the central limit theorem to conclude the absolute best we can hope for is $$|\rho-\alpha| = \theta(1/\sqrt{T})$$. This is the natural noise of independent samples that cannot be avoided. Even if we are guaranteed to have zero orphans and that everyone is honest, there is still _some noise_ [inherent to the block production process](https://shai-deshe.gitbook.io/pow-book/supplementary-material/math/probability-theory/the-math-of-block-creation). So it is only natural to assess the performance of our protocols in this metric.
+Yes. This is a technicality that I chose to gloss over. The value $$\rho$$ is not deterministic, but a random variable that represents how the fraction of the $$\alpha$$ miner _distributes_. There is always _some_ probability that $$\rho=1$$, so we can't hope for $$|\rho-\alpha|$$ to _always_ converge to $$0$$.
 
-Our analysis of FruitChains provided us with the following approximation, for carefully selected values of the freshness bound $$R$$ and fruit rate $$\lambda$$:
+The typical way to deal with it is to remove a _light tail_. That is, instead of trying to bound $$|\rho-\alpha|$$ with certainty, we are satisfied with a bound that'll work say $$99\%$$ of the time (or even better, $$1-O\left(e^{-T}\right)$$ of the time. If we can show that this bound vanishes quickly as $$T$$ increases, we are good.
+
+</details>
+
+The weakest form of fairness is the statement that $$|\rho-\alpha|$$ _eventually_ vanishes. That's not enough. We need guarantees on _how fast_ $$|\rho-\alpha|$$ decays.
+
+As a yardstick to measure how fast $$|\rho-\alpha|$$ decays, we will first work out the _strongest_ possible fairness.
+
+Mining is an _independent_ process: the probability of an $$\alpha$$-miner to mine the next block is not affected by any past events. It only depends on everyone's relative hash rates and mining strategies. This means that the best we can hope for is $$|\rho-\alpha| = \theta(1/\sqrt{T})$$. This is the part we can't remove. The natural noise of a Poisson process. The background hum of [block production](https://shai-deshe.gitbook.io/pow-book/supplementary-material/math/probability-theory/the-math-of-block-creation). The price of independence.
+
+<details>
+
+<summary>Seriously though, where does the square root come from?</summary>
+
+Imagine a drunkard staggering on the integer line. Starting at zero, he takes a step in a random direction, and another one, ad infimum. After $$T$$ steps, how far should he be from zero?
+
+A pillar of human intelligence called the central limit theorem tells us that the answer is $$\sqrt{T}$$.
+
+We can (carefully) apply this logic to block, setting things up so that the drunkard's position measures how far the miner is from their expected number of blocks (which is $$\alpha T$$, not $$0$$), to obtain an expected distance of about $$\sqrt{T}$$. The fairness deviation works out to be roughly $$\sqrt{T}/\alpha T \approx 1/\sqrt{T}$$.
+
+</details>
+
+For FruitChains, we had the following approximation (for appropriately selected $$R,\lambda$$):
 
 $$
 |\rho-\alpha| \le O\left(\frac{\Delta}{R} + \frac{1}{\sqrt{\lambda T}} \right)
 $$
 
-where $$\Delta$$ is the network latency. Understanding this formula quantitatively requires stripping away the asymptotics and diving into the constants, but even from the asymptotics we see the limitations casting their shadows. First, the presence of $$\Delta$$ as a linear term implies that the convergence time is very sensitive to network latency, and it seems that the only knob to adjust it is $$R$$. The devil is in the fact that we must have $$T\ge R$$. Why is that? Because we have to wait _at least_ the freshness bound. So on one hand, increasing $$R$$ is the _only_ way we have to increase fairness (recall that increasing $$\lambda$$ forces increasing $$R$$ as well), but on the other hand, this comes with decreased responsiveness. Another reason we'd like to avoid inceasing $$\lambda$$ is that it directly increases bandwidth requirement.
+The interesting part of this bound is the term $$1/\sqrt{\lambda T}$$. Comparing it to our yardstick, we see that it already vanishes as fast as we could hope. So what more is there to say? The problem is neatly tucked away into the asymptotic notation. It turns out that the constant preceding $$1/\sqrt{\lambda T}$$ is _quite large_. Not huge by any means, but formidable. The tragedy is that the only knob we have for scaling it down is $$\lambda$$, and $$\lambda$$ is under a square root.  To balance the bound, we must choose $$\lambda$$ on the magnitude of the (quite large) constant _squared_!&#x20;
 
-The PRS analysis gives a completely different tradeoff:
+And now the real kicker: recall the "impractical parameter regimes" we kept alluding to? They are impractical because on the one hand, we must have $$\lambda$$ of size "quite large squared". But on the other hand, the parameter regimes force $$R$$ to increase with $$\lambda$$. The final coffin is the trivial observation that $$T\ge R$$, because the convergence time can't be shorter than the freshness window.
+
+PRS manages to squeeze a much better tradeoff:
 
 $$
 |\rho-\alpha| \le O\left(\frac{K}{W} + \frac{1}{\sqrt{T}} \right)
 $$
 
-The benefit here is very clear: the possible unfairness is completely determined by $$K$$ and $$W$$, two parameters that have no bearing on the bandwidth, and are not correlated with the sampling error. Since $$K\ll W$$, we get very close to optimal selfish mining without running into impractical assumptions.
+Our yardstick reminds us again that asymptotically, $$1/\sqrt{T}$$ is the best we could hope for. This time, the constants are also nice. The time-independent component that remains  is $$K/W$$. One might wonder: how come the time latency doesn't affect the bound? Don't worry, it does. It just hides inside the $$K$$ (in the sense that choosing $$K$$ independently of $$\Delta$$ will always fail if $$\Delta$$ is large enough). $$K$$ wraps the stiff $$\Delta$$ with a quantity we can tweak.&#x20;
+
+Now, we already agreed that $$K\ll W$$ is mandatory for security reasons, and this aligns _perfectly_ with our desire that $$K/W$$ is small.
+
+But there is also the other side of the tradeoff. We will have to s kip the details, but it turns out that the selfish mining threshold is $$\frac{1}{2} - 2\frac{K}{W}$$.&#x20;
 
 But there's obviously the other side of the tradeoff. In the PRS analysis, we find that the selfish mining threshold has the form $$\frac{1}{2} - 2\frac{K}{W}$$, unlike FruitChains, where it is $$\frac{1}{2} - \frac{1}{R}$$. This actually makes it _significantly harder_ to reach very close to $$1/2$$. This is not a bug, but a feature: FruitChains _forces_ us to choose large $$R$$, in PRS, we can choose a bound that we like, measure an approriate $$K$$ from observing the network, and then choose $$W$$ accordingly.
 
