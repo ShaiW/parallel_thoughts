@@ -4,10 +4,6 @@ description: Split Rewards, not Hairs
 
 # Part 3: Proportional Reward Splitting
 
-
-
-**Warning**: This post is [**a draft**](../../drafts/). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts). For the parts that were already published as non-drafts, see [here](./).
-
 > **Acknowledgement**
 >
 > This post was funded by the [Quai network](https://qu.ai/), which generously provided me with a grant to fund my proof-of-work education efforts.
