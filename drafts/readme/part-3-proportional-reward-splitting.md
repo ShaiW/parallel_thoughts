@@ -246,18 +246,16 @@ And now the real kicker: recall the "impractical parameter regimes" we kept allu
 PRS manages to squeeze a much better tradeoff:
 
 $$
-|\rho-\alpha| \le O\left(\frac{K}{W} + \frac{1}{\sqrt{T}} \right)
+|\rho-\alpha| \le O\left(\frac{K}{W} + \frac{1}{\sqrt{(\lambda-1) T}} \right)
 $$
 
-Our yardstick reminds us again that asymptotically, $$1/\sqrt{T}$$ is the best we could hope for. This time, the constants are also nice. The time-independent component that remains  is $$K/W$$. One might wonder: how come the time latency doesn't affect the bound? Don't worry, it does. It just hides inside the $$K$$ (in the sense that choosing $$K$$ independently of $$\Delta$$ will always fail if $$\Delta$$ is large enough). $$K$$ wraps the stiff $$\Delta$$ with a quantity we can tweak.&#x20;
+Our yardstick reminds us again that asymptotically, $$1/\sqrt{\lambda T}$$ is the best we could hope for. But this time, the constants are _nice_. Nice enough that even for $$\lambda = 2$$ it only exerts a mild effect, and for say $$\lambda = 8$$ it becomes small enough to ignore within a few dozen blocks.
 
-Now, we already agreed that $$K\ll W$$ is mandatory for security reasons, and this aligns _perfectly_ with our desire that $$K/W$$ is small.
+The time-independent component that remains  is $$K/W$$. One might wonder: how come the time latency doesn't affect the bound? Don't worry, it does. The latency is not directly visible, but it manifests in how we choose $$K$$ (in the sense that any fixed $$K$$ will fail for sufficiently large $$\Delta$$). $$K$$ wraps the stiff $$\Delta$$ with a tweakable quantity.
 
-But there is also the other side of the tradeoff. We will have to s kip the details, but it turns out that the selfish mining threshold is $$\frac{1}{2} - 2\frac{K}{W}$$.&#x20;
+But there's obviously the other side of the tradeoff. In the PRS analysis, we find that the selfish mining threshold has the form $$\frac{1}{2} - \theta\left(\frac{K}{W}\right)$$. Since we agreed that $$K\ll W$$, we get that $$\theta\left(\frac{K}{W}\right)$$ can be scaled down. However, we still want to avoid making $$W$$ too large. The convergence time scales linearly with $$W$$, so setting it to moderately large values like $$W=1000$$ is already purpose-defeating.
 
-But there's obviously the other side of the tradeoff. In the PRS analysis, we find that the selfish mining threshold has the form $$\frac{1}{2} - 2\frac{K}{W}$$, unlike FruitChains, where it is $$\frac{1}{2} - \frac{1}{R}$$. This actually makes it _significantly harder_ to reach very close to $$1/2$$. This is not a bug, but a feature: FruitChains _forces_ us to choose large $$R$$, in PRS, we can choose a bound that we like, measure an approriate $$K$$ from observing the network, and then choose $$W$$ accordingly.
-
-It is not _quite_ true that the network latency doesn't appear at all in the analysis. It is neatly hidden in how we choose $$K$$. But its effect on the parameterization of the protocol is much weaker.
+So, how _should_ we set $$W$$? It is hard to provide analytical answers, so we turn to simulations. And indeed, the authors found via simulation that for a "moderately connected" adversary with a tie-winning probability of $$\gamma = 1/2$$, setting $$K=6$$ and $$W=100$$ furnishes $$\alpha$$-fairness for any $$\alpha<42\%$$, a huge improvement over the $$<25\%$$  Bitcoin can offer in the same regime.
 
 ### Trust Model
 
@@ -265,18 +263,18 @@ A unique feature of the PRS analysis, which does not hold for the FruitChain ana
 
 The security of FruitChain holds in a model where there is an honest majority. This is a reasonable assumption, but still a relatively strong one, which we would like to reduce. In a perfect system, the rational majority coincides with the honest majority.
 
-Relying entirely on game-theoretic considerations is complicated, and most analyses, including FruitChains', show that if _enough_ of the network is honest, then it is _rational_ for the rest of the network to remain honest. The PRS analysis shows that rational behaviour is an equilibrium, even assuming no honest players. Some would call such a protocol "self-enforcing".
+Relying entirely on game-theoretic considerations is complicated, and most analyses, including FruitChains', show that if _enough_ of the network is honest, then it is _rational_ for the rest of the network to remain honest. The PRS analysis shows that rational behavior is an equilibrium, even when _no_ honest players are assumed. However, the analysis _must_ assume that a majority is rational, and a quick reflection reveals that, for any protocol, without this assumption, it is impossible to establish anything.
+
+Some would call such a protocol "self-enforcing".
 
 ### Incentive Alignment and Future Goals
 
-But PRS _does_ inherit one drawback from FC: the degeneracy.
+As mentioned above, PRS _does_ inherit one drawback from FruitChains: equilibria degeneracy. In other words, referring to all workshares is _a_ rational strategy, but not _the_ rational strategy. There are other rational strategies that are equally profitable for the miner but are hazardous for the network. More concretely, a miner is rational if and only if they point to each of their _own_ shares. But they have full freedom to choose how to regard shares by _other_ miners.
 
-Recall that we had a problem with FruitChains: nothing incentivizes miners to point at other miners' fruit. It is true that honest behavior is an equilibrium, but it is _not_ unique. In fact, there is a parameter that we can freely change (determining the probability of including fruits created by someone else) without affecting the expected outcome in any way. This is called a _degeneracy_, and since this degeneracy begets strategies that are inoptimal for the protocol, it is a problem.
+Removing this limitation is currently a key priority in PRS research. So how would one go about this?
 
-A straightforward approach to a solution is to add weight to the workshares themselves, thereby putting workshare-omitting miners at a disadvantage. However, this should be done _very carefully_, as it undermines the decoupling we worked so hard to achieve between chain selection and reward distribution.
+The hope, at least as I see it, is for finding another "knob" that will allow us to incentivize inclusiveness at the expense of a _controlled_ trade-off of the benefits of the degenerate world. For example, we might find that an increase in share weight begets a _proportional_ increase in the required _honest_ fraction. Such a knob will allow us to make decisions such as "increase the share weight as much as possible without raising the honesty requirement beyond 10%". Of course, this is just one possible scenario out of many.
 
-The hope, at least as I see it, is for finding another "knob" that will allow us to incentivize inclusiveness at the expense of a _controlled_ trade-off of the benefits of the degenerate world. For example, we might find that an increase in share weight requires a _proportional_ increase in the required honest fraction. Such a knob will allow us to make decisions such as "increase the share weight as much as possible without raising the honesty requirement beyond 10%". Of course, this is just one possible scenario out of many.
+There is currently an interesting ongoing debate among the Quai developers and collaborators on these questions: What are the consequences of increasing share weight in terms of the honesty model and profitability thresholds? What is the correct way to choose share rates and weights? How do we juggle this array of properties — honesty requirements, incentive alignments, profitability threshold, expected profit, convergence time, and so on — which admit a great deal of subtlety within themselves and even more subtle interactions with each other? Is the share weight even the right parameter, or do we need a fancier knob?
 
-There is currently an interesting ongoing debate among the Quai developers and collaborators on these questions: What are the consequences of increasing share weight in terms of the honesty model and profitability thresholds? What is the correct way to choose share rates and weights? How do we juggle an array of properties — honesty requirements, incentive alignments, profitability threshold, expected profit, convergence time, and so on — which admit a great deal of subtlety within themselves and even more subtle interactions with each other? Is the share weight even the right parameter, or do we need a fancier knob?
-
-Finding a way to balance out all these requirements into a trade-off that provides sufficient guarantees to _all_ aspects is the art of protocol crafting. By watching or participating in the process of improving PRS, you can see this fascinating process unfold in real time.
+Finding a way to balance out all these requirements into a trade-off that provides sufficient guarantees to _all_ aspects is the art of protocol crafting. By watching or participating in improving PRS, you can see it unfold in real time.
