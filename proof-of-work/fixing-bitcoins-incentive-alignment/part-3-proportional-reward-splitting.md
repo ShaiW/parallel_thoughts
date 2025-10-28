@@ -6,7 +6,7 @@ description: Split Rewards, not Hairs
 
 
 
-**Warning**: This post is [**a draft**](./). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts). For the parts that were already published as non-drafts, see [here](../../proof-of-work/fixing-bitcoins-incentive-alignment/).
+**Warning**: This post is [**a draft**](../../drafts/). Please don't read it before reading [this](https://shai-deshe.gitbook.io/parallel-thoughts/drafts/drafts). For the parts that were already published as non-drafts, see [here](./).
 
 > **Acknowledgement**
 >
@@ -22,11 +22,11 @@ This is a subtle yet profound difference. In part because a new share retroactiv
 
 ## Quick Recap
 
-[In the first post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer. We recast this discovery as a (bounded) violation of a retrofitted security property called [_fairness_](https://shai-deshe.gitbook.io/parallel-thoughts/proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains#fairness)_._ Roughly, we defined $$\alpha$$-fairness as the assertion that as we consider increasingly long time frames, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
+[In the first post](part-i-bitcoin.md), we described _selfish mining_, a phenomenon first observed on Bitcoin by Eyal and Sirer. We recast this discovery as a (bounded) violation of a retrofitted security property called [_fairness_](https://shai-deshe.gitbook.io/parallel-thoughts/proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains#fairness)_._ Roughly, we defined $$\alpha$$-fairness as the assertion that as we consider increasingly long time frames, the proportion of rewards collected by an $$\alpha$$-miner should converge to $$\alpha$$.
 
 By furnishing a profitable selfish mining strategy, Eyal and Sirer demonstrated that Bitcoin is not $$\alpha$$ fair for a wide range of $$\alpha$$ values (the exact range depends on the underlying network conditions, but even at optimal conditions, their strategy shows that $$\alpha$$-fairness is impossible for any $$\alpha>1/3$$).
 
-Selfish mining motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md).
+Selfish mining motivated Pass and Shi to create the FruitChains protocol, which we discussed at great length in [the second post](part-2-fruitchains.md).
 
 ### Incentive Alignment
 
@@ -161,7 +161,7 @@ Setting $$K$$ positive to allow "salvaging" workshares lost to shallow forks rem
 
 And _this_ is how packing is allowed in PRS.
 
-Let us summarize this in a table (which you are encouraged to compare with the [FruitChains table](../../proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md#fruitchains-protocol-summary)):
+Let us summarize this in a table (which you are encouraged to compare with the [FruitChains table](part-2-fruitchains.md#fruitchains-protocol-summary)):
 
 <details>
 

@@ -7,7 +7,7 @@
 * [Fixing Bitcoin's Incentive Alignment](proof-of-work/fixing-bitcoins-incentive-alignment/README.md)
   * [Part I: Bitcoin](proof-of-work/fixing-bitcoins-incentive-alignment/part-i-bitcoin.md)
   * [Part 2: FruitChains](proof-of-work/fixing-bitcoins-incentive-alignment/part-2-fruitchains.md)
-  * [Page 3: Proportional Reward Splitting](proof-of-work/fixing-bitcoins-incentive-alignment/page-3-proportional-reward-splitting.md)
+  * [Part 3: Proportional Reward Splitting](proof-of-work/fixing-bitcoins-incentive-alignment/part-3-proportional-reward-splitting.md)
 * [The Qubic Minority Report](proof-of-work/the-qubic-minority-report.md)
 
 ## Books I Love
@@ -16,5 +16,4 @@
 
 ## Drafts
 
-* [Readme](drafts/readme/README.md)
-  * [Part 3: Proportional Reward Splitting](drafts/readme/part-3-proportional-reward-splitting.md)
+* [Readme](drafts/readme.md)
